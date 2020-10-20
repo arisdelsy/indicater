@@ -3,7 +3,9 @@
 -- The 1280 Truck In/Out application is included with the 1280 standard firmware 
 -- and is loaded by importing the application from the Configuration menu
 -- “Import Files”.  
+-- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
+--------------------------------ASCV1.0.1-------------------------------------
 
 program TruckInOut; 
  
@@ -29,6 +31,7 @@ program TruckInOut;
   g_ciYesNo   : constant integer := 5;
   g_ciCPList  : constant integer := 3;
   g_ciReport  : constant integer := 10;
+  g_ciNetWeight : constant integer := 4;	-- assigning screen variable to call
   
   -- Outputs
   g_ciGreenLight   : constant integer := 1;
@@ -1047,7 +1050,7 @@ program TruckInOut;
           ReadytoProcessTruck(100); 
         end if;             
       else     
-        SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
+        SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
       end if;   
 
@@ -1643,7 +1646,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     g_sCustomerName := Blank;   
 	 -- SetWidgetVisibility(btnNet);
  -- SetWidgetVisibility(btnPrint);
-  SetWidgetVisibility(btnNet, VOn);
+  	SetWidgetVisibility(btnNet, VOn);
     SetWidgetVisibility(btnPrint, VOn);
   end;
                         
@@ -2030,6 +2033,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnNo then
       ProcessDataEntry("N");
       g_iDelete := 0;
+
+-----------------------------------------------------------
+    elsif g_iWidget = btnNet then
+    	SelectScreen(g_ciNetWeight);
 
     elsif g_iWidget = btnRegs then
      if EntryMode = WeighMode or EntryMode = NoMode or EntryMode = ExitScale then 
