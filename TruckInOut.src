@@ -5,7 +5,8 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.1-------------------------------------
+--------------------------------ASCV1.0.2-------------------------------------
+--try to see where the weigh in and weigh out totals are being stored
 
 program TruckInOut; 
  
