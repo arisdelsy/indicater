@@ -1055,6 +1055,7 @@ program TruckInOut;
         ReadytoProcessTruck(100); 
       end if;   
 
+-----------------------------------------------------------------------!!Check
     elsif EntryMode = EnterTruckID_WeighOut then 
       
       if IsValid(sTemp, "S", 15) then
@@ -1286,7 +1287,7 @@ program TruckInOut;
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
   end;
-
+--------- possible storing of values
   procedure HowmanyScales;
   begin
 
@@ -1347,6 +1348,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;   
 
+--!!Weigh in procedure
   procedure PrintInboundTicket;  -- Print Weigh In Ticket
     rPrintGrossWgt : real;
   begin
@@ -1368,6 +1370,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   
   end;     
 
+--!!Weigh out procedure
   procedure PrintOutboundTicket;  -- Print Weigh Out Ticket
   begin
     
