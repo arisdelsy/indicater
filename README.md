@@ -6,6 +6,7 @@ SCALE 1 HAS BEEN FIXED!!
 
 ------------------Goals for the week 10/31----------------------
     figure out timer
+   
     have buttons display after weigh out has been completed
     
     *get the net weight of the weigh in and weigh out values
