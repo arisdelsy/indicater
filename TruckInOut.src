@@ -6,7 +6,7 @@
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
 --------------------------------ASCV1.0.3-------------------------------------
---Made procedures to turn on and off the buttons for net weight and print
+--Made procedures to turn on and off the buttons for net weight and print (lines 233 & 244)
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 
 program TruckInOut; 
