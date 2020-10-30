@@ -5,8 +5,9 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.2-------------------------------------
---try to see where the weigh in and weigh out totals are being stored
+--------------------------------ASCV1.0.3-------------------------------------
+--Made procedures to turn on and off the buttons for net weight and print
+--Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 
 program TruckInOut; 
  
@@ -250,6 +251,22 @@ program TruckInOut;
     SetWidgetVisibility(lbOr, Von);
 
  end; 
+
+ procedure TurnOnWeighOutButtons;
+ begin
+
+  SetWidgetVisibility(btnNet, VOn);
+  SetWidgetVisibility(btnPrint, VOn);
+
+ end;
+
+procedure TurnOffWeighOutButtons;
+begin
+
+  SetWidgetVisibility(btnNet, VOff);
+  SetWidgetVisibility(btnPrint, VOff);
+
+end;
 
   procedure Delete25Percent;  
     i : integer;  
@@ -1648,10 +1665,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     g_rProductMultiplier := 0;
     g_sCustomerID := Blank;
     g_sCustomerName := Blank;   
-	 -- SetWidgetVisibility(btnNet);
- -- SetWidgetVisibility(btnPrint);
-  	SetWidgetVisibility(btnNet, VOn);
-    SetWidgetVisibility(btnPrint, VOn);
+  	--SetWidgetVisibility(btnNet, VOn);
+    --SetWidgetVisibility(btnPrint, VOn);
   end;
                         
 		
@@ -1776,9 +1791,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
                   
         end if; 
 
+        --storing of net weight
         TransDB.Net :=( TransDB.Gross - TransDB.Tare);   
         StoreTransaction;
         PrintOutboundTicket;
+        
         ClearTare(g_iTotalScale); 
         if g_iStoredTares = 0 then 
           g_sysResult1 := InboundDB.Delete;
