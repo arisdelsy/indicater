@@ -5,8 +5,7 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.4-------------------------------------
---Made procedures to turn on and off the buttons for net weight and print (lines 233 & 244)
+--------------------------------ASCV1.0.5-------------------------------------
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 --!! Added a back button to screen 4 instead of timer for the meantime
 
@@ -1662,6 +1661,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     DisplayStatus(Blank); 
     StopTimer(25);   
     TurnOffWeighInOutButtons;
+    --Keeps our buttons off on initial
     TurnOffWeighOutButtons;           
     g_sProductID := Blank;
     g_sProductName := Blank;
@@ -1805,7 +1805,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         TurnOnWeighOutButtons;
 
         if g_iWidget = btnPrint  then
-            PrintOutboundTicket;
+          PrintOutboundTicket;
+          if g_iTruckExit = 1 then
+            SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+            TurnOffWeighInOutButtons;
+            TurnOnGreenLight;    
+            EntryMode := ExitScale;
+          else
+            SetLabelText(lbSts1, "Weigh Out Complete"); 
+            EntryMode := WeighMode;
+          TurnOnGreenLight;
+          end if;
         end if;
 
        
@@ -1823,16 +1833,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           end if; 
         end if;  
 
-        if g_iTruckExit = 1 then
-          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-          TurnOffWeighInOutButtons;
-          TurnOnGreenLight;    
-          EntryMode := ExitScale;
-        else
-          SetLabelText(lbSts1, "Weigh Out Complete"); 
-          EntryMode := WeighMode;
-          TurnOnGreenLight;
-        end if;
+        --if g_iTruckExit = 1 then
+          --SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+          --TurnOffWeighInOutButtons;
+          --TurnOnGreenLight;    
+          --EntryMode := ExitScale;
+        --else
+          --SetLabelText(lbSts1, "Weigh Out Complete"); 
+          --EntryMode := WeighMode;
+          --TurnOnGreenLight;
+        --end if;
         
       end if;  
       
