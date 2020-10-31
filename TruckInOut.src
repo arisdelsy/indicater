@@ -1805,7 +1805,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         TurnOnWeighOutButtons;
 
         if g_iWidget = btnPrint  then
-            PrintOutboundTicket;
+          PrintOutboundTicket;
+          if g_iTruckExit = 1 then
+            SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+            TurnOffWeighInOutButtons;
+            TurnOnGreenLight;    
+            EntryMode := ExitScale;
+          else
+            SetLabelText(lbSts1, "Weigh Out Complete"); 
+            EntryMode := WeighMode;
+          TurnOnGreenLight;
+          end if;
         end if;
 
        
@@ -1823,16 +1833,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           end if; 
         end if;  
 
-        if g_iTruckExit = 1 then
-          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-          TurnOffWeighInOutButtons;
-          TurnOnGreenLight;    
-          EntryMode := ExitScale;
-        else
-          SetLabelText(lbSts1, "Weigh Out Complete"); 
-          EntryMode := WeighMode;
-          TurnOnGreenLight;
-        end if;
+        --if g_iTruckExit = 1 then
+          --SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+          --TurnOffWeighInOutButtons;
+          --TurnOnGreenLight;    
+          --EntryMode := ExitScale;
+        --else
+          --SetLabelText(lbSts1, "Weigh Out Complete"); 
+          --EntryMode := WeighMode;
+          --TurnOnGreenLight;
+        --end if;
         
       end if;  
       
