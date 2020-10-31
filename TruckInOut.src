@@ -5,8 +5,7 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.4-------------------------------------
---Made procedures to turn on and off the buttons for net weight and print (lines 233 & 244)
+--------------------------------ASCV1.0.5-------------------------------------
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 --!! Added a back button to screen 4 instead of timer for the meantime
 
@@ -1661,7 +1660,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     SetLabelText(lbSts1, Blank);
     DisplayStatus(Blank); 
     StopTimer(25);   
-    TurnOffWeighInOutButtons;           
+    TurnOffWeighInOutButtons;
+    --Keeps our buttons off on initial
+    TurnOffWeighOutButtons;           
     g_sProductID := Blank;
     g_sProductName := Blank;
     g_sProductConversionUnits := Blank;
@@ -1761,7 +1762,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         SetPrintText(3, Blank);
         SetPrintText(5, "KEYED"); 
         StoreTransaction;           
-        PrintOutboundTicket;  
+        PrintOutboundTicket;
+
+        
       SetLabelText(lbSts1,"Net. Weight"); 
 			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
         TurnOffWeighInOutButtons;             
@@ -1797,7 +1800,15 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         --storing of net weight
         TransDB.Net :=( TransDB.Gross - TransDB.Tare);   
         StoreTransaction;
-        PrintOutboundTicket;
+        
+        --Turn on our buttons
+        TurnOnWeighOutButtons;
+
+        if g_iWidget = btnPrint  then
+            PrintOutboundTicket;
+        end if;
+
+       
         
         ClearTare(g_iTotalScale); 
         if g_iStoredTares = 0 then 
