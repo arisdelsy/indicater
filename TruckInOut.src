@@ -2063,6 +2063,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     	--SetupStartTimer(12, 2000, TimerOneShot);
 		  --SelectScreen(g_ciMain);
 
+    elsif g_iWidget = btnBack then
+      SelectScreen(g_ciMain);
+
     elsif g_iWidget = btnRegs then
      if EntryMode = WeighMode or EntryMode = NoMode or EntryMode = ExitScale then 
         g_iDelete := 0;
