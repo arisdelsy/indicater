@@ -5,7 +5,10 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.1-------------------------------------
+--------------------------------ASCV1.0.4-------------------------------------
+--Made procedures to turn on and off the buttons for net weight and print (lines 233 & 244)
+--Going to insert procedures to where the weigh out is located (line 1351 & 1373)
+--!! Added a back button to screen 4 instead of timer for the meantime
 
 program TruckInOut; 
  
@@ -249,6 +252,22 @@ program TruckInOut;
     SetWidgetVisibility(lbOr, Von);
 
  end; 
+
+ procedure TurnOnWeighOutButtons;
+ begin
+
+  SetWidgetVisibility(btnNet, VOn);
+  SetWidgetVisibility(btnPrint, VOn);
+
+ end;
+
+procedure TurnOffWeighOutButtons;
+begin
+
+  SetWidgetVisibility(btnNet, VOff);
+  SetWidgetVisibility(btnPrint, VOff);
+
+end;
 
   procedure Delete25Percent;  
     i : integer;  
@@ -1054,6 +1073,7 @@ program TruckInOut;
         ReadytoProcessTruck(100); 
       end if;   
 
+-----------------------------------------------------------------------!!Check
     elsif EntryMode = EnterTruckID_WeighOut then 
       
       if IsValid(sTemp, "S", 15) then
@@ -1285,7 +1305,7 @@ program TruckInOut;
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
   end;
-
+--------- possible storing of values
   procedure HowmanyScales;
   begin
 
@@ -1322,7 +1342,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     SelectScale(g_iTotalScale);
 
   end; 
-
+--interupt truck ID entry
+--if truck ID is entered then exec Net weight
   procedure StoreTransaction;
   begin
 
@@ -1346,6 +1367,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;   
 
+--!!Weigh in procedure
   procedure PrintInboundTicket;  -- Print Weigh In Ticket
     rPrintGrossWgt : real;
   begin
@@ -1367,6 +1389,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   
   end;     
 
+--!!Weigh out procedure
+--Edit/duplicate this procedure
   procedure PrintOutboundTicket;  -- Print Weigh Out Ticket
   begin
     
@@ -1637,17 +1661,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     SetLabelText(lbSts1, Blank);
     DisplayStatus(Blank); 
     StopTimer(25);   
-    TurnOffWeighInOutButtons;           
+    TurnOffWeighInOutButtons;
+    TurnOffWeighOutButtons;           
     g_sProductID := Blank;
     g_sProductName := Blank;
     g_sProductConversionUnits := Blank;
     g_rProductMultiplier := 0;
     g_sCustomerID := Blank;
     g_sCustomerName := Blank;   
-	 -- SetWidgetVisibility(btnNet);
- -- SetWidgetVisibility(btnPrint);
-  	SetWidgetVisibility(btnNet, VOn);
-    SetWidgetVisibility(btnPrint, VOn);
+  	--SetWidgetVisibility(btnNet, VOn);
+    --SetWidgetVisibility(btnPrint, VOn);
   end;
                         
 		
@@ -1739,7 +1762,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         SetPrintText(3, Blank);
         SetPrintText(5, "KEYED"); 
         StoreTransaction;           
-        PrintOutboundTicket;  
+        PrintOutboundTicket;
+
+        
       SetLabelText(lbSts1,"Net. Weight"); 
 			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
         TurnOffWeighInOutButtons;             
@@ -1772,9 +1797,19 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
                   
         end if; 
 
+        --storing of net weight
         TransDB.Net :=( TransDB.Gross - TransDB.Tare);   
         StoreTransaction;
-        PrintOutboundTicket;
+        
+        --Turn on our buttons
+        TurnOnWeighOutButtons;
+
+        if g_iWidget = btnPrint  then
+            PrintOutboundTicket;
+        end if;
+
+       
+        
         ClearTare(g_iTotalScale); 
         if g_iStoredTares = 0 then 
           g_sysResult1 := InboundDB.Delete;
@@ -2037,8 +2072,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 -----------------------------------------------------------
     elsif g_iWidget = btnNet then
     	SelectScreen(g_ciNetWeight);
-    	--SetupStartTimer(2, 2000, TimerOneShot);
-		
+    	--SetupStartTimer(12, 2000, TimerOneShot);
+		  --SelectScreen(g_ciMain);
+
+    elsif g_iWidget = btnBack then
+      SelectScreen(g_ciMain);
 
     elsif g_iWidget = btnRegs then
      if EntryMode = WeighMode or EntryMode = NoMode or EntryMode = ExitScale then 
