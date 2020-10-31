@@ -5,9 +5,10 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.3-------------------------------------
+--------------------------------ASCV1.0.4-------------------------------------
 --Made procedures to turn on and off the buttons for net weight and print (lines 233 & 244)
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
+--!! Added a back button to screen 4 instead of timer for the meantime
 
 program TruckInOut; 
  
