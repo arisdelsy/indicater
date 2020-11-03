@@ -5,9 +5,10 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.5-------------------------------------
+--------------------------------ASCV1.0.6-------------------------------------
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 --!! Added a back button to screen 4 instead of timer for the meantime
+--new procedure on line 1559
 
 program TruckInOut; 
  
@@ -122,6 +123,8 @@ program TruckInOut;
   g_iDelete : integer;
   g_Decimal : integer;
   g_rInboundWgt : real;
+--new var to calculate the net weight of a live weigh out 
+  g_currentNet  : real;
 
   type boolean is (False,True); 
   g_bUpdate : boolean;
@@ -1304,7 +1307,7 @@ end;
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
   end;
---------- possible storing of values
+--------- initialization of scales' units and count
   procedure HowmanyScales;
   begin
 
@@ -1489,6 +1492,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end; 
 
+----------------------------------------------- pull from here! (weight)
   procedure PrintTruck;
     rTotalWgt : real;
     sId : string;
@@ -1543,6 +1547,15 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
 
   end;  
+
+  procedure CalcNetWeight;
+  begin
+      TransDB.CustId := CustomerDB.Id;
+      if TransDB.FindFirst(Trans_CustID) = SysOk then
+        --TransDB.Net
+        g_currentNet := rTotalWgt - ReportDB.Net
+      end if;
+  end;
 
   procedure PrintCustomerByProduct;
     dtTemp : datetime := SystemTime;
@@ -1796,7 +1809,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         end if; 
 
         --storing of net weight
-        TransDB.Net :=( TransDB.Gross - TransDB.Tare);   
+        TransDB.Net :=( TransDB.Gross - TransDB.Tare);
         StoreTransaction;
         
         --Turn on our buttons
