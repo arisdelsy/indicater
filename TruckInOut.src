@@ -1669,8 +1669,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     g_rProductMultiplier := 0;
     g_sCustomerID := Blank;
     g_sCustomerName := Blank;   
-  	--SetWidgetVisibility(btnNet, VOn);
-    --SetWidgetVisibility(btnPrint, VOn);
   end;
                         
 		
