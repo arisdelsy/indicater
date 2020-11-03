@@ -5,10 +5,11 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.6-------------------------------------
+--------------------------------ASCV1.0.7-------------------------------------
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 --!! Added a back button to screen 4 instead of timer for the meantime
 --new procedure on line 1559
+--removed traffic light
 
 program TruckInOut; 
  
@@ -180,58 +181,7 @@ program TruckInOut;
     return 0;   
     
   end;
-
-  procedure TurnOnGreenLight;  
-  begin 
-
-    if g_iTrafficLights = 1 then
-      Print(Auxfmt20);
-      SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOff);
-      SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOn); 
-      g_sLightStatus := "GREEN";
-      SetImageWidgetPath(btnStop, "local://24.png");
-      SetImageWidgetPath(btnGo, "local://23.png");
-    end if;
-
-  end;
-
-  procedure TurnOnGreenLightManually;  
-  begin 
-
-      Print(Auxfmt20);
-      SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOff);
-      SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOn); 
-      g_sLightStatus := "GREEN";
-      SetImageWidgetPath(btnStop, "local://24.png");
-      SetImageWidgetPath(btnGo, "local://23.png");
-  
-  end;
-
- procedure TurnOnRedLight; 
- begin
-
-    if g_iTrafficLights = 1 then
-      Print(Auxfmt19);        
-      SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOff);
-      SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOn);   
-      g_sLightStatus := "RED";   
-      SetImageWidgetPath(btnstop, "local://25.png");
-      SetImageWidgetPath(btnGo, "local://22.png");
-    end if;
-		
- end;  
-
- procedure TurnOnRedLightManually; 
- begin
-
-    Print(Auxfmt19);        
-    SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOff);
-    SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOn);   
-    g_sLightStatus := "RED";   
-    SetImageWidgetPath(btnstop, "local://25.png");
-    SetImageWidgetPath(btnGo, "local://22.png");
-
- end;       
+      
 
  procedure TurnOffWeighInOutButtons;
  begin
@@ -1332,6 +1282,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
  
     UnLockMajorKeys;
+--Lock Keys for up and down for scales
+    LockKey(NavUpKey);
+    LockKey(NavDownKey);
     SetLabelText(lbSts1, Blank); 
     TurnOffWeighInOutButtons; 
     ScreenSetup;
@@ -1549,12 +1502,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   end;  
 
   procedure CalcNetWeight;
+  rTotalWgt : real;
   begin
+      rTotalWgt := TransDB.Net;
       TransDB.CustId := CustomerDB.Id;
       if TransDB.FindFirst(Trans_CustID) = SysOk then
         --TransDB.Net
-        g_currentNet := rTotalWgt - ReportDB.Net
-      end if;
+        g_currentNet := rTotalWgt - ReportDB.Net;
+			end if;
   end;
 
   procedure PrintCustomerByProduct;
@@ -1610,13 +1565,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if; 
 
   end;    
-
-  handler Timer1Trip;
-  begin
-  
-    TurnOnGreenLight;
-  
-  end;   
+ 
 
   handler SP1Trip;
   begin
@@ -1625,7 +1574,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     EnableSP(2);
     DisplayStatus(Blank);
     SelectScreen(g_ciMain);	
-    TurnOnRedLight;
     SelectScale(g_iTotalScale);
     EntryMode := WeighMode;  
     SetWidgetVisibility(btnSetup, VOff);
@@ -1662,14 +1610,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     DisableSP(2);
     EnableSP(1);
     ClosePrompt;
-    TurnOnGreenLight;
     UnlockMajorKeys; 
     EntryMode := NoMode;  
     selectscreen(g_cimain); 
     SetWidgetVisibility(btnRegs, Von);
     SetWidgetVisibility(btnSetup, Von);
-    SetWidgetVisibility(btnStop, Von);
-    SetWidgetVisibility(btnGo, Von);
     SetLabelText(lbSts1, Blank);
     DisplayStatus(Blank); 
     StopTimer(25);   
@@ -1753,8 +1698,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
             SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
             TurnOffWeighInOutButtons;            
             ClearTare(g_iTotalScale);
-            EntryMode := ExitScale;
-            TurnOnGreenLight;		
+            EntryMode := ExitScale;	
           else
             SetLabelText(lbSts1, "Weigh In Complete"); 
             EntryMode := WeighMode;
@@ -1779,7 +1723,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetLabelText(lbSts1,"Net. Weight"); 
 			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
         TurnOffWeighInOutButtons;             
-        TurnOnGreenLight;
         ClearTare(g_iTotalScale);  
 				EntryMode := ExitScale;
                   
@@ -1814,21 +1757,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         
         --Turn on our buttons
         TurnOnWeighOutButtons;
-
-        if g_iWidget = btnPrint  then
-          PrintOutboundTicket;
-          if g_iTruckExit = 1 then
-            SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-            TurnOffWeighInOutButtons;
-            TurnOnGreenLight;    
-            EntryMode := ExitScale;
-          else
-            SetLabelText(lbSts1, "Weigh Out Complete"); 
-            EntryMode := WeighMode;
-          TurnOnGreenLight;
-          end if;
-        end if;
-
        
         
         ClearTare(g_iTotalScale); 
@@ -2096,6 +2024,18 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     	--SetupStartTimer(12, 2000, TimerOneShot);
 		  --SelectScreen(g_ciMain);
 
+    elsif g_iWidget = btnPrint  then
+      PrintOutboundTicket;
+        if g_iTruckExit = 1 then
+          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+          TurnOffWeighInOutButtons;    
+          EntryMode := ExitScale;
+        else
+          SetLabelText(lbSts1, "Weigh Out Complete"); 
+          EntryMode := WeighMode;
+        end if;
+        
+
     elsif g_iWidget = btnBack then
       SelectScreen(g_ciMain);
 
@@ -2113,17 +2053,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           PromptForEntry("Enter Password", SetupEnterTPasswordMode, Blank, 3);
         end if; 
       end if;    
-
-    elsif g_iWidget = btnStop or g_iWidget = BtnGo then
-      if g_iTrafficLights = 0 then 
-        if g_sLightStatus = "RED" then 
-          TurnOnGreenLightManually;
-        else
-          TurnOnRedLightManually;
-        end if;   
-      else
-        DisplayStatus("Lights are in Auto Mode");
-      end if; 
     
     elsif g_iWidget = btnSetup then
       if EntryMode = NoMode then  
