@@ -242,5 +242,6 @@ lbSet15   : constant integer := 126;
 btnNet    : constant integer := 132;
 btnPrint  : constant integer := 133;
 btnBack   : constant integer := 134;
+lbl136    : constant integer := 136;
 USBPRN    : constant string := "USBPRN";
 ADVPRN    : constant string := "ADVPRN";
