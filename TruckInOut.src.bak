@@ -5,10 +5,11 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.6-------------------------------------
+--------------------------------ASCV1.0.7-------------------------------------
 --Going to insert procedures to where the weigh out is located (line 1351 & 1373)
 --!! Added a back button to screen 4 instead of timer for the meantime
---new procedure on line 1559
+--new procedure on line 1504
+--removed traffic light
 
 program TruckInOut; 
  
@@ -1502,13 +1503,13 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   procedure CalcNetWeight;
   rTotalWgt : real;
+  displayNet  : string;
   begin
       rTotalWgt := TransDB.Net;
       TransDB.CustId := CustomerDB.Id;
-      if TransDB.FindFirst(Trans_CustID) = SysOk then
-        --TransDB.Net
-        g_currentNet := rTotalWgt - ReportDB.Net;
-			end if;
+      g_currentNet := rTotalWgt - ReportDB.Net;
+      displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
+      SetLabelText(lbl136, displayNet);
   end;
 
   procedure PrintCustomerByProduct;
@@ -2020,6 +2021,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 -----------------------------------------------------------
     elsif g_iWidget = btnNet then
     	SelectScreen(g_ciNetWeight);
+      CalcNetWeight;
     	--SetupStartTimer(12, 2000, TimerOneShot);
 		  --SelectScreen(g_ciMain);
 
