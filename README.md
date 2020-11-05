@@ -1,5 +1,7 @@
 # indicater
 
+CODE COMPLETE!
+
 SCALE 1 HAS BEEN FIXED!!
 
 !! Calculate net weight from the weigh in and outs !!
