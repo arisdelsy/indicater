@@ -5,11 +5,13 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.0.7-------------------------------------
---Going to insert procedures to where the weigh out is located (line 1351 & 1373)
---!! Added a back button to screen 4 instead of timer for the meantime
---new procedure on line 1504
---removed traffic light
+--------------------------------ASCV1.1.1-------------------------------------
+--!! Added a back button to screen 4 instead of timer for the meantime X
+--new procedure on line 1504 X
+--removed traffic light X
+--formatting buttons to look like weigh in/out buttons X
+--creating loop for weigh out
+
 
 program TruckInOut; 
  
@@ -210,6 +212,8 @@ program TruckInOut;
 
   SetWidgetVisibility(btnNet, VOn);
   SetWidgetVisibility(btnPrint, VOn);
+  SetWidgetVisibility(barNet, VOn);
+  SetWidgetVisibility(barPrint, VOn);  
 
  end;
 
@@ -218,6 +222,8 @@ begin
 
   SetWidgetVisibility(btnNet, VOff);
   SetWidgetVisibility(btnPrint, VOff);
+  SetWidgetVisibility(barNet, VOff);
+  SetWidgetVisibility(barPrint, VOff);
 
 end;
 
@@ -1256,6 +1262,11 @@ end;
     SetWidgetColor(BarOut, "#8D0018");    
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
+    -- widget colors for net weight and print buttons
+    SetWidgetColor(barNet, "#8D0018");
+    SetWidgetColor(barPrint, "#8D0018");    
+    SetBargraphLevel(barNet, 100);
+    SetBargraphLevel(barPrint, 100);
   end;
 --------- initialization of scales' units and count
   procedure HowmanyScales;
