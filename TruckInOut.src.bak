@@ -1512,6 +1512,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;  
 
+  procedure DisplayTruck;
+  displayTruckid  : string;
+  begin 
+      displayTruckid := RealToString(InboundDB.ID, 6, g_iDecimal);
+      SetLabelText(lbl138, displayTruckid);
+      SetLabelText(lblTruck, displayTruckid);
+  end;
+
   procedure CalcNetWeight;
   rTotalWgt : real;
   displayNet  : string;
@@ -2035,6 +2043,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       CalcNetWeight;
     	--SetupStartTimer(12, 2000, TimerOneShot);
 		  --SelectScreen(g_ciMain);
+      DisplayTruck;
 
     elsif g_iWidget = btnPrint  then
       PrintOutboundTicket;
