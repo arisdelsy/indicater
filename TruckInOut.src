@@ -213,7 +213,7 @@ program TruckInOut;
   SetWidgetVisibility(btnNet, VOn);
   SetWidgetVisibility(btnPrint, VOn);
   SetWidgetVisibility(barNet, VOn);
-  SetWidgetVisibility(barrint, VOn);  
+  SetWidgetVisibility(barPrint, VOn);  
 
  end;
 
