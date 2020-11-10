@@ -5,12 +5,8 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.1.1-------------------------------------
---!! Added a back button to screen 4 instead of timer for the meantime X
---new procedure on line 1504 X
---removed traffic light X
---formatting buttons to look like weigh in/out buttons X
---creating loop for weigh out
+--------------------------------ASCV1.1.2-------------------------------------
+
 
 
 program TruckInOut; 
@@ -1512,10 +1508,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;  
 
+--------------------------------------------------------Display Truck ID-------------------------------------
   procedure DisplayTruck;
   displayTruckid  : string;
   begin 
-      displayTruckid := RealToString(InboundDB.ID, 6, g_iDecimal);
+      displayTruckid := TransDB.TruckId;
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
   end;
