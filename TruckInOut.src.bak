@@ -1512,10 +1512,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;  
 
+--------------------------------------------------------Display Truck ID-------------------------------------
   procedure DisplayTruck;
   displayTruckid  : string;
   begin 
-      displayTruckid := RealToString(InboundDB.ID, 6, g_iDecimal);
+      displayTruckid := TransDB.TruckId;
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
   end;
