@@ -124,6 +124,8 @@ program TruckInOut;
   g_rInboundWgt : real;
 --new var to calculate the net weight of a live weigh out 
   g_currentNet  : real;
+  --variable holding current truck id
+  displayTruckid  : string;
 
   type boolean is (False,True); 
   g_bUpdate : boolean;
@@ -1329,7 +1331,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;   
 
---!!Weigh in procedure
+
   procedure PrintInboundTicket;  -- Print Weigh In Ticket
     rPrintGrossWgt : real;
   begin
@@ -1351,8 +1353,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   
   end;     
 
---!!Weigh out procedure
---Edit/duplicate this procedure
   procedure PrintOutboundTicket;  -- Print Weigh Out Ticket
   begin
     
@@ -1510,11 +1510,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
 --------------------------------------------------------Display Truck ID-------------------------------------
   procedure DisplayTruck;
-  displayTruckid  : string;
   begin 
       displayTruckid := TransDB.TruckId;
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
+  end;
+
+  procedure ClearTruck;
+  begin
+      displayTruckid := Blank;
+      SetLabelText(lbl138, Blank);
+      SetLabelText(lblTruck, Blank);
   end;
 
   procedure CalcNetWeight;
@@ -1635,6 +1641,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     DisplayStatus(Blank); 
     StopTimer(25);   
     TurnOffWeighInOutButtons;
+    ------------------------------------------------
+    --DisplayTruck;
     --Keeps our buttons off on initial
     TurnOffWeighOutButtons;           
     g_sProductID := Blank;
@@ -1712,7 +1720,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           
           if g_iTruckExit = 1 then
             SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
-            TurnOffWeighInOutButtons;            
+            TurnOffWeighInOutButtons;      
             ClearTare(g_iTotalScale);
             EntryMode := ExitScale;	
           else
@@ -1932,11 +1940,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnWIn and EntryMode = WeighMode then
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
 			SetLabelText(lbSts1, Blank);
-
+      
     elsif g_iWidget = btnWOut and EntryMode = WeighMode then
       SetLabelText(lbSts1, Blank);
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-
+    
     elsif g_iWidget = lbSet7 then 
       PromptForEntry("Enter Product ID", SetupProductID, Blank,1);
 
@@ -2044,6 +2052,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnPrint  then
       PrintOutboundTicket;
+      TurnOffWeighOutButtons;
+      ClearTruck;
         if g_iTruckExit = 1 then
           SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
           TurnOffWeighInOutButtons;    
