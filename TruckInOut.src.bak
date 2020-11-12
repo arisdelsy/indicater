@@ -15,7 +15,10 @@ program TruckInOut;
 
   -- Constants and aliases definitions 
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
-  g_csVersion           : constant string  := "1.06"; --Program Version   
+  g_csVersion           : constant string  := "1.06"; --Program Version  
+  
+  as_Version            : constant string  := "1.1.2"; --Version of our program
+
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
   g_ciDigInOn           : constant integer := 0; --Digital Input is On 
@@ -811,6 +814,16 @@ end;
                                                                                                      
   end;
 
+ ---------------------------------------------------------------------------------------------------
+--------------------------------------------------------Display Truck ID-------------------------------------
+  procedure DisplayTruck;
+  begin
+      displayTruckid := InboundDB.Id; 
+      --displayTruckid := TransDB.TruckId;
+      SetLabelText(lbl138, displayTruckid);
+      SetLabelText(lblTruck, displayTruckid);
+  end;
+
   procedure GoIntoSetupMenu;  -- Enters Setup Menu
     riQube2 : real; 
   begin
@@ -1015,11 +1028,13 @@ end;
       
       if IsValid(sTemp, "S", 15) then  
         InboundDB.ID := sTemp;
-        
+
         g_sysResult1 := InboundDB.FindFirst(Inbound_Id);         
         if g_sysResult1 <> SysOk then
           EntryMode := CapturingInboundWeight;   
-          WaitSS(1);          
+          WaitSS(1);
+          ---------NEW
+          DisplayTruck;          
         else     
           SetLabelText(lbSts1, "Truck Already Weighed In"); 
           ReadytoProcessTruck(100); 
@@ -1331,7 +1346,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;   
 
---!!Weigh in procedure
+
   procedure PrintInboundTicket;  -- Print Weigh In Ticket
     rPrintGrossWgt : real;
   begin
@@ -1353,8 +1368,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   
   end;     
 
---!!Weigh out procedure
---Edit/duplicate this procedure
   procedure PrintOutboundTicket;  -- Print Weigh Out Ticket
   begin
     
@@ -1510,13 +1523,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;  
 
---------------------------------------------------------Display Truck ID-------------------------------------
-  procedure DisplayTruck;
-  begin 
-      displayTruckid := TransDB.TruckId;
-      SetLabelText(lbl138, displayTruckid);
-      SetLabelText(lblTruck, displayTruckid);
-  end;
 
   procedure ClearTruck;
   begin
@@ -1722,9 +1728,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           
           if g_iTruckExit = 1 then
             SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
-            TurnOffWeighInOutButtons; --------------------------------------------STOP   
-            
-            --DisplayTruck;      
+            TurnOffWeighInOutButtons;      
             ClearTare(g_iTotalScale);
             EntryMode := ExitScale;	
           else
@@ -2050,8 +2054,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnNet then
     	SelectScreen(g_ciNetWeight);
       CalcNetWeight;
-    	--SetupStartTimer(12, 2000, TimerOneShot);
-		  --SelectScreen(g_ciMain);
       DisplayTruck;
 
     elsif g_iWidget = btnPrint  then
