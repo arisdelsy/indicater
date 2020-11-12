@@ -1046,7 +1046,6 @@ end;
         ReadytoProcessTruck(100); 
       end if;   
 
------------------------------------------------------------------------!!Check
     elsif EntryMode = EnterTruckID_WeighOut then 
       
       if IsValid(sTemp, "S", 15) then
