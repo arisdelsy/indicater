@@ -5,10 +5,10 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2-------------------------------------
+----------------------------------ASCV1.2.1-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
-
+--Map TruckID widget to inbound database screen
 
 
 program TruckInOut; 
@@ -817,8 +817,8 @@ end;
   end;
 
  ---------------------------------------------------------------------------------------------------
---------------------------------------------------------Display Truck ID-------------------------------------
-  procedure DisplayTruck;
+-------------------------------------------------------------------------------------------
+  procedure DisplayTruck;  --Display Truck ID
   begin
       displayTruckid := InboundDB.Id; 
       --displayTruckid := TransDB.TruckId;
@@ -2052,6 +2052,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       g_iDelete := 0;
 
 -----------------------------------------------------------
+    elsif g_iWidget = lblTruck then
+      SelectScreen(g_ciDList);
+    
     elsif g_iWidget = btnNet then
     	SelectScreen(g_ciNetWeight);
       CalcNetWeight;
