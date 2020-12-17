@@ -5,10 +5,11 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.1-----------------------------------
+----------------------------------ASCV1.2.2-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
 --Map TruckID widget to inbound database screen
+--NEW procedure on 1897
 
 
 program TruckInOut; 
@@ -19,7 +20,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2"; --Version of our program
+  as_Version            : constant string  := "1.2.2"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -1468,7 +1469,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end; 
 
------------------------------------------------ pull from here! (weight)
+---Print procedure
   procedure PrintTruck;
     rTotalWgt : real;
     sId : string;
@@ -1892,6 +1893,35 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     g_iDelete := g_iWidget;
 
   end;
+
+  procedure SelectInboundtoWeighOut; -------- NEW PROCEDURE
+    iTouch : integer;
+    i : integer;
+  begin
+
+    iTouch := g_iWidget mod 3;
+    for i := minLab2 to maxLab2 
+    loop
+      SetwidgetColor(i, "Black");
+    end loop;
+
+    if iTouch = 2 then
+      Setwidgetcolor(g_iWidget, "#BB0000");
+      SetwidgetColor(g_iWidget + 1, "#BB0000");
+      SetwidgetColor(g_iWidget + 2, "#BB0000");
+      
+    elsif iTouch = 0 then
+      Setwidgetcolor(g_iWidget, "#BB0000");
+      SetwidgetColor(g_iWidget + 1, "#BB0000");
+      SetwidgetColor(g_iWidget - 1, "#BB0000");
+    elsif iTouch = 1 then
+      Setwidgetcolor(g_iWidget, "#BB0000");
+      SetwidgetColor(g_iWidget - 1, "#BB0000");
+      SetwidgetColor(g_iWidget - 2, "#BB0000");
+    end if;
+    g_iDelete := g_iWidget;
+
+  end;  
 
   handler WidgetClicked;
     iDigInSts : integer;
