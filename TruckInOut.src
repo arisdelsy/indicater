@@ -40,6 +40,7 @@ program TruckInOut;
   g_ciCPList  : constant integer := 3;
   g_ciReport  : constant integer := 10;
   g_ciNetWeight : constant integer := 4;	-- assigning screen variable to call
+  g_ciWSelect : constant integer := 6;
   
   -- Outputs
   g_ciGreenLight   : constant integer := 1;
@@ -217,7 +218,11 @@ program TruckInOut;
   SetWidgetVisibility(btnNet, VOn);
   SetWidgetVisibility(btnPrint, VOn);
   SetWidgetVisibility(barNet, VOn);
-  SetWidgetVisibility(barPrint, VOn);  
+  SetWidgetVisibility(barPrint, VOn);
+  SetWidgetColor(barPrint, "#8D0018");
+  SetWidgetColor(barNet, "#8D0018");    
+  SetBargraphLevel(barPrint, 100);
+  SetBargraphLevel(barNet, 100);  
 
  end;
 
@@ -311,6 +316,37 @@ end;
     return i;  
       
   end;    
+
+-------------------------------------------------------------------
+---------------New function for selection of weighout--------------
+-------------------------------------------------------------------
+  function GetSelection1 : integer;  -- Returns the current selected record in the display list    
+    i : integer;    
+  begin
+
+      if g_iDelete = 11 or g_iDelete = 12 or g_iDelete = 13 then   
+        g_iWidgetNum := 1;
+      elsif g_iDelete = 14 or g_iDelete = 15 or g_iDelete = 16 then
+        g_iWidgetnum := 2;
+      elsif g_iDelete = 17 or g_iDelete = 18 or g_iDelete = 19 then
+        g_iWidgetNum := 3;
+      elsif g_iDelete = 20 or g_iDelete = 21 or g_iDelete = 22 then
+        g_iWidgetNum := 4;
+      elsif g_iDelete = 23 or g_iDelete = 24 or g_iDelete = 25 then
+        g_iWidgetNum := 5;
+      elsif g_iDelete = 26 or g_iDelete = 27 or g_iDelete = 28 then
+        g_iWidgetNum := 6;
+      elsif g_iDelete = 29 or g_iDelete = 30 or g_iDelete = 31 then
+        g_iWidgetNum := 7;
+      elsif g_iDelete = 32 or g_iDelete = 33 or g_iDelete = 34 then
+        g_iWidgetNum := 8;
+      end if;
+      
+      i := (g_iPage - 1) * g_ciMaxPerScreen + g_iWidgetNum;  
+    
+    return i;  
+      
+  end; 
 
   procedure ClearDisplayListArray;  -- Clear Display List Array
     i : integer;
@@ -1278,10 +1314,10 @@ end;
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
     -- widget colors for net weight and print buttons
-    SetWidgetColor(barNet, "#8D0018");
-    SetWidgetColor(barPrint, "#8D0018");    
-    SetBargraphLevel(barNet, 100);
-    SetBargraphLevel(barPrint, 100);
+    --SetWidgetColor(barNet, "#8D0018");
+    --SetWidgetColor(barPrint, "#8D0018");    
+    --SetBargraphLevel(barNet, 100);
+    --SetBargraphLevel(barPrint, 100);
   end;
 --------- initialization of scales' units and count
   procedure HowmanyScales;
@@ -1866,6 +1902,26 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;
 
+  procedure WO_Selection;
+  begin
+
+    if g_iDelete <> 0 then
+      if EntryMode = SelectInboundDB then
+        InboundDB.ID := g_arDisplay[GetSelection].sID;
+        if InboundDB.FindFirst(1) = SysOk then        
+          SelectScreen(g_ciYesNo);         
+          Setlabeltext(lbYN,"Do you want to delete ID " + InboundDB.ID + "?");
+          EntryMode := YNClearOneInbound;
+        else 
+          DisplayStatus("Error: Invalid ID");
+        end if;
+      end if;
+    else
+      Displaystatus("Select One to Delete");
+    end if;
+
+  end;
+
   procedure SelectInboundtoDelete;
     iTouch : integer;
     i : integer;
@@ -1981,9 +2037,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 			SetLabelText(lbSts1, Blank);
       
     elsif g_iWidget = btnWOut and EntryMode = WeighMode then
-      SetLabelText(lbSts1, Blank);
-      PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-    
+      --SetLabelText(lbSts1, Blank);
+      --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
+      SelectScreen(g_ciWSelect);
+
     elsif g_iWidget = lbSet7 then 
       PromptForEntry("Enter Product ID", SetupProductID, Blank,1);
 
