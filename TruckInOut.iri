@@ -259,6 +259,8 @@ lbl147    : constant integer := 147;
 lbl148    : constant integer := 148;
 lbl149    : constant integer := 149;
 lbl150    : constant integer := 150;
+bar151    : constant integer := 151;
+bar152    : constant integer := 152;
 lbl154    : constant integer := 154;
 lbl155    : constant integer := 155;
 lbl156    : constant integer := 156;
@@ -269,6 +271,9 @@ lbl160    : constant integer := 160;
 btnID     : constant integer := 161;
 btnAxle   : constant integer := 162;
 btnNPr    : constant integer := 163;
+lbLoad    : constant integer := 164;
+lbl165    : constant integer := 165;
+
 
 
 USBPRN    : constant string := "USBPRN";
