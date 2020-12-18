@@ -10,6 +10,7 @@
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
 --Map TruckID widget to inbound database screen
 --NEW procedure on 1897
+--NEW procedure on 324
 
 
 program TruckInOut; 
@@ -41,7 +42,8 @@ program TruckInOut;
   g_ciReport  : constant integer := 10;
   g_ciNetWeight : constant integer := 4;	-- assigning screen variable to call
   g_ciWSelect : constant integer := 6;
-  
+  g_ciLoad    : constant integer := 9;
+
   -- Outputs
   g_ciGreenLight   : constant integer := 1;
   g_ciRedLight     : constant integer := 2;
@@ -222,7 +224,7 @@ program TruckInOut;
   SetWidgetColor(barPrint, "#8D0018");
   SetWidgetColor(barNet, "#8D0018");    
   SetBargraphLevel(barPrint, 100);
-  SetBargraphLevel(barNet, 100);  
+  SetBargraphLevel(barNet, 100);
 
  end;
 
