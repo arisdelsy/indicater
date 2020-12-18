@@ -266,7 +266,7 @@ lbl157    : constant integer := 157;
 lbl158    : constant integer := 158;
 maxLab2   : constant integer := 159;
 lbl160    : constant integer := 160;
-lbl161    : constant integer := 161;
+btnID     : constant integer := 161;
 btnAxle   : constant integer := 162;
 btnNPr    : constant integer := 163;
 
