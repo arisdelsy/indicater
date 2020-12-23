@@ -11,7 +11,8 @@
 --Map TruckID widget to inbound database screen
 --NEW procedure on 1897
 --NEW procedure on 324
-
+--NEW procedure on 2027
+--NEW procedure on 2075
 
 program TruckInOut; 
  
@@ -385,7 +386,28 @@ end;
       SetLabelText(i, Chr$(08));
     end loop;
 
-  end; 
+  end;
+
+
+  -------------------------------------------------
+  ----NEW Clear Procedure for Selection Screen-----
+  -------------------------------------------------
+  procedure ClearWidgetsData_1;  -- Clear Display  List Screen text boxes
+    i : integer;
+  begin  
+   
+    for i := minLab2 to maxLab2
+    loop
+      SetLabelText(i, Chr$(08));
+    end loop;
+
+
+    for i := minId to maxName
+    loop
+      SetLabelText(i, Chr$(08));
+    end loop;
+
+  end;  
 -----------------------------------------CHECK
   procedure DisplayInboundDB; 
     i : integer;
@@ -441,6 +463,64 @@ end;
 
   end;   
 
+  ------------------------------------------------------
+  --------NEW Display Selection Screen Widgets----------
+  ------------------------------------------------------
+
+  procedure DisplayInboundDB_1; 
+    i : integer;
+    j : integer;
+  begin 
+
+    -- Clear Text Boxes & Widgets
+    ClearWidgetsData;
+    
+    -- Clear Array
+    ClearDisplayListArray; 
+    
+    -- Sort DB or Get Based of Criteria                                       
+    InboundDB.Sort(1);                                    
+    i := 1; 
+    
+    -- FillArray
+    if InboundDB.GetFirst = SysOk then  
+
+      g_arDisplay[i].sID := InboundDB.ID;  
+      g_arDisplay[i].sName := RealToString(InboundDB.InPWgt,0,g_iDecimal);  
+			g_arDisplay[i].sInDT := Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);
+      i := 2;            
+ 
+      while InboundDB.GetNext = SysOk  
+      loop         
+        if i <= g_ciMaxRecords then             
+          g_arDisplay[i].sID := InboundDB.ID;  
+      		g_arDisplay[i].sName := RealToString(InboundDB.InPWgt,0,g_iDecimal);  
+					g_arDisplay[i].sInDT :=Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);                                                      
+          i := i + 1;                          
+        end if;       
+      end loop; 
+      
+    end if; 
+    
+    -- Select Screen, Enable Handlers, Clear Screen and initialize variables
+    SelectScreen(g_ciLoad);                                       
+    i := minLab2;  
+    SetSymbolState(g_iWidgetNum, 1);
+    g_iPage := 1;          
+    j := 1;   
+    
+    -- Populate Screen
+    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerScreen   
+    loop    
+      SetLabelText(i, g_arDisplay[j].sID);
+      SetLabelText(i + 1, g_arDisplay[j].sName); 
+			SetLabelText(i + 2, g_arDisplay[j].sInDT); 
+      i := i + 3;
+      j := j + 1;   
+    end loop;                            
+
+  end;
+
   procedure PageUporDownTruckList(tmpPage : integer);  -- Page Up/Page Down the Display List 
     a : integer;
     i : integer;
@@ -488,6 +568,58 @@ end;
     end if;
 
   end; 
+
+  --------------------------------------------------------
+  ----------NEW Paging up/down selection screen-----------
+  --------------------------------------------------------
+
+  procedure PageUporDownTruckList_1(tmpPage : integer);  -- Page Up/Page Down the Display List 
+    a : integer;
+    i : integer;
+    j : integer;
+    b : integer;
+  begin 
+    
+    -- Clear display
+    for i := minLab2 to maxLab2
+    loop
+      SetLabelText(i, Blank);
+    end loop;
+    
+    -- Find out where we are in the array
+    if tmpPage = 1 then
+      i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
+    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerScreen) then
+      i := (tmpPage * g_ciMaxPerScreen) - 7;      
+    else
+      i := 1;
+      g_iPage := 1;              
+    end if;
+
+    b := minLab2;
+    j := i + 7; 
+    
+    -- Display the top of the list if we have reach the end 
+    if g_arDisplay[i].sID = Blank then -- and EntryMode <> SetupSelectTruck then
+ 
+      DisplayInboundDB_1;  
+
+    else  
+      
+      -- Populate display with new data
+      for a := i to j
+      loop  
+        if a > 0 and a <= g_ciMaxRecords and g_arDisplay[a].sID <> Blank then
+          SetLabelText(b, g_arDisplay[a].sID);
+          SetLabelText(b + 1, g_arDisplay[a].sName);  
+					SetLabelText(b + 2, g_arDisplay[a].sInDT);
+          b := b + 3; 
+        end if; 
+      end loop;
+       
+    end if;
+
+  end;
 
   procedure PromptForEntry(sPrompt : string;  iMode : integer; sDefault : string; iPrompt : Integer);  -- Prompts operator for data
   begin
@@ -903,13 +1035,48 @@ end;
     
   end; 
 
+  ----------------------------------------------------
+  ------------------Loading Procedure-----------------
+  ----------------------------------------------------
+  procedure Loading (iTime : integer);
+  begin
+    
+    bar_level : integer;
+    iCount  : integer;
 
+    SetupStartTimer(2, iTime, TimerOneShot);
+    
+    for iCount := 3 to 0 step -1
+    loop
+      bar_level := 100 / iCount;
+      SetBargraphLevel(bar151, bar_level);
+    end loop;
+
+
+
+  end;
+ 
+  --------------------------------------------------
+  ------------------Cancel Procedure----------------
+  --------------------------------------------------
+  procedure Cancel;
+  begin
+
+    --Stop and reset timer
+    StopTimer(2);
+    ResetTimer(2);
+
+    --Clear selection procedure
+
+
+    --Bring user back to selection screen
+    SelectScreen(g_ciLoad);
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
   begin 
   
     SetupStartTimer(29, iTime, TimerOneShot);
-    
+
   end;    
 
   procedure ProcessPromptCancel;   -- Performs Cancel operation when cancelling a prompt
@@ -1918,14 +2085,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         InboundDB.ID := g_arDisplay[GetSelection].sID;
         if InboundDB.FindFirst(1) = SysOk then        
           SelectScreen(g_ciLoad);         
-          Setlabeltext(lbLoad,"Do you want to delete ID " + InboundDB.ID + "?");
-          EntryMode := YNClearOneInbound;
+          Setlabeltext(lbLoad,"Do you want to select ID " + InboundDB.ID + "?");
+          Loading;
         else 
           DisplayStatus("Error: Invalid ID");
         end if;
       end if;
     else
-      Displaystatus("Select One to Delete");
+      Displaystatus("Select One to Weight Out");
     end if;
 
   end;
