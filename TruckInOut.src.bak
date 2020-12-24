@@ -99,6 +99,8 @@ program TruckInOut;
   Blank : constant string := "";      
 
   -- Global/Types variables definitions 
+  bar_level : integer;
+  iCount    : integer;
   g_sSetupPassword : stored string;   
   g_sTruckPassword : stored string;
   g_iDownload : stored integer;
@@ -473,7 +475,7 @@ end;
   begin 
 
     -- Clear Text Boxes & Widgets
-    ClearWidgetsData;
+    ClearWidgetsData_1;
     
     -- Clear Array
     ClearDisplayListArray; 
@@ -1040,9 +1042,6 @@ end;
   ----------------------------------------------------
   procedure Loading (iTime : integer);
   begin
-    
-    bar_level : integer;
-    iCount  : integer;
 
     SetupStartTimer(2, iTime, TimerOneShot);
     
@@ -1067,10 +1066,12 @@ end;
     ResetTimer(2);
 
     --Clear selection procedure
-
+    ClearWidgetsData_1;
 
     --Bring user back to selection screen
     SelectScreen(g_ciLoad);
+
+  end;
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
   begin 
@@ -2086,7 +2087,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         if InboundDB.FindFirst(1) = SysOk then        
           SelectScreen(g_ciLoad);         
           Setlabeltext(lbLoad,"Do you want to select ID " + InboundDB.ID + "?");
-          Loading;
+          Loading(300);
         else 
           DisplayStatus("Error: Invalid ID");
         end if;
@@ -2215,6 +2216,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       --SetLabelText(lbSts1, Blank);
       --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
       SelectScreen(g_ciWSelect);
+
+    elsif g_iWidget = btnID then
+      SetLabelText(lbSts1, Blank);
+      PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
 
     elsif g_iWidget = lbSet7 then 
       PromptForEntry("Enter Product ID", SetupProductID, Blank,1);
