@@ -93,6 +93,11 @@ program TruckInOut;
   EntryMode : integer;      
   LastEntryMode : integer;
 
+  -- Selection Screen Modes
+  SelectTruck : constant integer := 3000;
+  LoadTruck   : constant integer := 4000
+    CancelTruck   : constant integer : 4001;  
+
   g_ciMaxPerScreen          : constant integer := 8; 
   g_ciMaxRecords            : constant integer := 1000;  
 
@@ -2086,7 +2091,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         InboundDB.ID := g_arDisplay[GetSelection].sID;
         if InboundDB.FindFirst(1) = SysOk then        
           SelectScreen(g_ciLoad);         
-          Setlabeltext(lbLoad,"Do you want to select ID " + InboundDB.ID + "?");
+          Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
           Loading(300);
         else 
           DisplayStatus("Error: Invalid ID");
