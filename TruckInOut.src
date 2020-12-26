@@ -5,7 +5,7 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.2-----------------------------------
+----------------------------------ASCV1.2.3-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
 --Map TruckID widget to inbound database screen
@@ -22,7 +22,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2.2"; --Version of our program
+  as_Version            : constant string  := "1.2.3"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -92,6 +92,11 @@ program TruckInOut;
     
   EntryMode : integer;      
   LastEntryMode : integer;
+
+  -- Selection Screen Modes
+  SelectTruck : constant integer := 3000;
+  LoadTruck   : constant integer := 4000
+    CancelTruck   : constant integer := 4001;  
 
   g_ciMaxPerScreen          : constant integer := 8; 
   g_ciMaxRecords            : constant integer := 1000;  
@@ -327,7 +332,7 @@ end;
 -------------------------------------------------------------------
 ---------------New function for selection of weighout--------------
 -------------------------------------------------------------------
-  function GetSelection1 : integer;  -- Returns the current selected record in the display list    
+  function GetSelection_1 : integer;  -- Returns the current selected record in the display list    
     i : integer;    
   begin
 
@@ -466,7 +471,7 @@ end;
   end;   
 
   ------------------------------------------------------
-  --------NEW Display Selection Screen Widgets----------
+  ---------NEW Display Selection Screen Widgets---------
   ------------------------------------------------------
 
   procedure DisplayInboundDB_1; 
@@ -2083,10 +2088,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     if g_iSelect <> 0 then
       if EntryMode = SelectInboundDB then
-        InboundDB.ID := g_arDisplay[GetSelection].sID;
+        InboundDB.ID := g_arDisplay[GetSelection_1].sID;
         if InboundDB.FindFirst(1) = SysOk then        
           SelectScreen(g_ciLoad);         
-          Setlabeltext(lbLoad,"Do you want to select ID " + InboundDB.ID + "?");
+          Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
           Loading(300);
         else 
           DisplayStatus("Error: Invalid ID");
