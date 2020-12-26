@@ -9,10 +9,7 @@
 ---------------------------------KNOWN BUGS-----------------------------------
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
 --Map TruckID widget to inbound database screen
---NEW procedure on 1897
---NEW procedure on 324
---NEW procedure on 2027
---NEW procedure on 2075
+
 
 program TruckInOut; 
  
@@ -93,9 +90,9 @@ program TruckInOut;
   EntryMode : integer;      
   LastEntryMode : integer;
 
-  -- Selection Screen Modes
+  -- NEW Selection Screen Modes
   SelectTruck : constant integer := 3000;
-  LoadTruck   : constant integer := 4000
+  LoadTruck   : constant integer := 4000;
     CancelTruck   : constant integer := 4001;  
 
   g_ciMaxPerScreen          : constant integer := 8; 
@@ -415,7 +412,7 @@ end;
     end loop;
 
   end;  
------------------------------------------CHECK
+
   procedure DisplayInboundDB; 
     i : integer;
     j : integer;
@@ -1239,7 +1236,7 @@ end;
           WaitSS(1);
         end if;
       end if; 
-
+    --weigh in
     elsif EntryMode = EnterTruckID_WeighIn then 
       
       if IsValid(sTemp, "S", 15) then  
@@ -1259,7 +1256,7 @@ end;
         SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
       end if;   
-
+    --weigh out
     elsif EntryMode = EnterTruckID_WeighOut then 
       
       if IsValid(sTemp, "S", 15) then
