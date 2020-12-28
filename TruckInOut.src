@@ -507,7 +507,7 @@ end;
     end if; 
     
     -- Select Screen, Enable Handlers, Clear Screen and initialize variables
-    SelectScreen(g_ciLoad);                                       
+    SelectScreen(g_ciNetWeight);                                       
     i := minLab2;  
     SetSymbolState(g_iWidgetNum, 1);
     g_iPage := 1;          
@@ -993,7 +993,7 @@ end;
                                                                                                      
   end;
 
- ---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
   procedure DisplayTruck;  --Display Truck ID
   begin
@@ -1064,14 +1064,14 @@ end;
   begin
 
     --Stop and reset timer
-    StopTimer(2);
-    ResetTimer(2);
+    --StopTimer(2);
+    --ResetTimer(2);
 
     --Clear selection procedure
     ClearWidgetsData_1;
 
     --Bring user back to selection screen
-    SelectScreen(g_ciLoad);
+    SelectScreen(g_ciWSelect);
 
   end;
 
@@ -1876,7 +1876,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 		
 	
 
-
+-------------------------------------------------------
   handler Timer25Trip;  -- Wait for Standstill check
     iMotion : integer;   
     rGrossWgt : real;
@@ -2087,9 +2087,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       if EntryMode = SelectInboundDB then
         InboundDB.ID := g_arDisplay[GetSelection_1].sID;
         if InboundDB.FindFirst(1) = SysOk then        
-          SelectScreen(g_ciLoad);         
-          Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
-          Loading(300);
+          SelectScreen(g_ciNetWeight);         
+          --Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
+          --Loading(300);
         else 
           DisplayStatus("Error: Invalid ID");
         end if;
@@ -2277,6 +2277,25 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SelectScreen(g_ciSetup);
       EntryMode := Setup1Mode;
 
+    elsif g_iWidget = btnExt4 then
+			--DisplayStatus(Blank);
+      --EntryMode := LastEntryMode;
+      SelectScreen(g_ciMain);
+      --for i := minLab2 to maxLab2 
+      --loop
+      --  SetwidgetColor(i, "Black");
+      --end loop;
+
+    elsif g_iWidget = btnPgUp4 then
+      g_iPage := g_iPage - 1;   
+      SetSymbolState(g_iWidgetNum, 2);      
+      PageUporDownTruckList_1(g_iPage);     
+    
+    elsif g_iWidget = btnPgDn4 then
+      g_iPage := g_iPage + 1;   
+      SetSymbolState(g_iWidgetNum, 2);       
+      PageUporDownTruckList_1(g_iPage);
+
     elsif g_iWidget = btnPgUp3 then
       g_iPage := g_iPage - 1;            
       PageUporDownCustomerProductList(g_iPage);  
@@ -2308,7 +2327,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= MinLabel and g_iWidget <= MaxLabel then
       SelectInboundtoDelete;
- 
+
+    elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
+      SelectInboundtoWeighOut;
+
     elsif g_iWidget = btnDl then
       DeleteInbound;
 
@@ -2341,10 +2363,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           SetLabelText(lbSts1, "Weigh Out Complete"); 
           EntryMode := WeighMode;
         end if;
-        
 
-    elsif g_iWidget = btnBack then
-      SelectScreen(g_ciMain);
+    elsif g_iWidget = btnbck then
+      SelectScreen(g_ciWSelect);
+      --EntryMode := WeighMode;
 
     elsif g_iWidget = btnRegs then
      if EntryMode = WeighMode or EntryMode = NoMode or EntryMode = ExitScale then 
