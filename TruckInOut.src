@@ -95,7 +95,7 @@ program TruckInOut;
   LoadTruck   : constant integer := 4000;
     CancelTruck   : constant integer := 4001;  
 
-  
+  g_ciMaxPerSelectScreen    : constant integer := 5;
   g_ciMaxPerScreen          : constant integer := 8; 
   g_ciMaxRecords            : constant integer := 1000;  
 
