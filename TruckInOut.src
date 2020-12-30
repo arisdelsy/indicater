@@ -95,6 +95,7 @@ program TruckInOut;
   LoadTruck   : constant integer := 4000;
     CancelTruck   : constant integer := 4001;  
 
+  
   g_ciMaxPerScreen          : constant integer := 8; 
   g_ciMaxRecords            : constant integer := 1000;  
 
@@ -350,7 +351,7 @@ end;
       elsif g_iSelect = 32 or g_iSelect = 33 or g_iSelect = 34 then
         g_iWidgetNum := 8;
       end if;
-      
+
       i := (g_iPage - 1) * g_ciMaxPerScreen + g_iWidgetNum;  
     
     return i;  
@@ -507,7 +508,7 @@ end;
     end if; 
     
     -- Select Screen, Enable Handlers, Clear Screen and initialize variables
-    SelectScreen(g_ciNetWeight);                                       
+    SelectScreen(g_ciWSelect);                                       
     i := minLab2;  
     SetSymbolState(g_iWidgetNum, 1);
     g_iPage := 1;          
@@ -1050,7 +1051,7 @@ end;
     for iCount := 3 to 0 step -1
     loop
       bar_level := 100 / iCount;
-      SetBargraphLevel(bar151, bar_level);
+      --SetBargraphLevel(bar151, bar_level);
     end loop;
 
 
@@ -2217,12 +2218,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnWOut and EntryMode = WeighMode then
       --SetLabelText(lbSts1, Blank);
       --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-      SelectScreen(g_ciWSelect);
+      --SelectScreen(g_ciWSelect);
       DisplayInboundDB_1;
+      EntryMode := SelectInboundDB;
 
     elsif g_iWidget = btnID then
       SetLabelText(lbSts1, Blank);
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
+      SelectScreen(g_ciNetWeight);
 
     elsif g_iWidget = lbSet7 then 
       PromptForEntry("Enter Product ID", SetupProductID, Blank,1);
@@ -2331,6 +2334,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
       SelectInboundtoWeighOut;
+      WO_Selection;
+      g_iSelect := 0;
 
     elsif g_iWidget = btnDl then
       DeleteInbound;
@@ -2363,6 +2368,21 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         else
           SetLabelText(lbSts1, "Weigh Out Complete"); 
           EntryMode := WeighMode;
+        end if;
+
+    elsif g_iWidget = btnprt2  then
+      PrintOutboundTicket;
+      TurnOffWeighOutButtons;
+      ClearTruck;
+        if g_iTruckExit = 1 then
+          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+          TurnOffWeighInOutButtons;    
+          EntryMode := ExitScale;
+          SelectScreen(g_ciMain);
+        else
+          SetLabelText(lbSts1, "Weigh Out Complete"); 
+          EntryMode := WeighMode;
+          SelectScreen(g_ciMain);
         end if;
 
     elsif g_iWidget = btnbck then
