@@ -5,11 +5,10 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.3-----------------------------------
+----------------------------------ASCV1.2.4-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
---Map TruckID widget to inbound database screen
-
+--Have selection id pass to Stemp vaiable
 
 program TruckInOut; 
  
@@ -63,6 +62,8 @@ program TruckInOut;
   SelectInboundDB         : constant integer := 121;  
   YNClearALLInbounds      : constant integer := 122;
   YNClearOneInbound       : constant integer := 123;
+  --Selection Mode
+  SelectWOut              : constant integer := 124;
 
   -- Setup Modes
   SetupEnterSPasswordMode  : constant integer := 999;
@@ -97,7 +98,7 @@ program TruckInOut;
 
   g_ciMaxPerSelectScreen    : constant integer := 5;
   g_ciMaxPerScreen          : constant integer := 8; 
-  g_ciMaxRecords            : constant integer := 1000;  
+  g_ciMaxRecords            : constant integer := 1000;
 
   Blank : constant string := "";      
 
@@ -156,7 +157,7 @@ program TruckInOut;
     end record;     
 
  type DisplayArrays is array [g_ciMaxRecords] of DisplayRecord;
-  g_arDisplay : DisplayArrays; 
+  g_arDisplay : DisplayArrays;
 
   InboundDB : Inbounddatabase; 
   ProductDB : ProductDatabase;
@@ -352,7 +353,7 @@ end;
         g_iWidgetNum := 8;
       end if;
 
-      i := (g_iPage - 1) * g_ciMaxPerScreen + g_iWidgetNum;  
+      i := (g_iPage - 1) * g_ciMaxPerSelectScreen + g_iWidgetNum;  
     
     return i;  
       
@@ -515,7 +516,7 @@ end;
     j := 1;   
     
     -- Populate Screen
-    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerScreen   
+    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerSelectScreen   
     loop    
       SetLabelText(i, g_arDisplay[j].sID);
       SetLabelText(i + 1, g_arDisplay[j].sName); 
@@ -594,8 +595,8 @@ end;
     -- Find out where we are in the array
     if tmpPage = 1 then
       i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
-    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerScreen) then
-      i := (tmpPage * g_ciMaxPerScreen) - 7;      
+    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerSelectScreen) then
+      i := (tmpPage * g_ciMaxPerSelectScreen) - 7;      
     else
       i := 1;
       g_iPage := 1;              
@@ -696,6 +697,7 @@ end;
     sMessage : string;
   begin 
     
+    --makes upper case
     sValidFor := UCase$(sValidFor);
     
     if sValidFor = "S" then
@@ -1302,7 +1304,52 @@ end;
         SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
       end if; 
+
+    elsif EntryMode = SelectTruckID_WeighOut then 
       
+      if IsValid(sTemp, "S", 15) then
+    
+        InboundDB.ID := sTemp;
+        g_sysResult1 := InboundDB.FindFirst(Inbound_Id);   
+        g_Decimal := Locate(sTemp, ".");
+        if g_sysResult1 = SysOk then
+          g_bTareOption := False;
+          GetInboundWgtBasedUnits;
+          --if g_iNbrofProducts >= 2 then
+            --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
+          --else
+            --if g_iNbrofCustomers >= 2 then
+              --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
+            --else
+              --EntryMode := CapturingOutboundWeight;   
+              --WaitSS(g_iTotalScale); 
+            --end if;
+          --end if;        
+        else
+          -- Check Keyed Tare Option
+          GetTare(g_iTotalScale, g_uUnits, rTareWgt); 
+          g_bTareOption := True;
+          if rTareWgt = 0.0 then           
+            SetLabelText(lbSts1, "Truck Not Weighed In");
+            ReadytoProcessTruck(100); 
+          else
+            --if g_iNbrofProducts >= 2 then
+              --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
+            --else
+              --if g_iNbrofCustomers >= 2 then
+                --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
+              --else
+                --EntryMode := CapturingKeyTareWeight;   
+                --WaitSS(1);      
+              --end if; 
+            --end if;        
+          end if;
+        end if;             
+      else     
+        SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
+        ReadytoProcessTruck(100); 
+      end if; 
+
     elsif EntryMode = YNClearALLInbounds then
 
       SelectScreen(g_ciDList);
@@ -2140,16 +2187,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(i, "Black");
     end loop;
 
-    if iTouch = 2 then
+    if iTouch = 1 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget + 2, "#BB0000");
       
-    elsif iTouch = 0 then
+    elsif iTouch = 2 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
-    elsif iTouch = 1 then
+    elsif iTouch = 0 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       SetwidgetColor(g_iWidget - 2, "#BB0000");
@@ -2283,8 +2330,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnExt4 then
 			--DisplayStatus(Blank);
-      --EntryMode := LastEntryMode;
+      
       SelectScreen(g_ciMain);
+      EntryMode := WeighMode;
       --for i := minLab2 to maxLab2 
       --loop
       --  SetwidgetColor(i, "Black");
