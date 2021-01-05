@@ -5,11 +5,10 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.3-----------------------------------
+----------------------------------ASCV1.2.4-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
 --FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
---Map TruckID widget to inbound database screen
-
+--Have selection id pass to Stemp vaiable
 
 program TruckInOut; 
  
@@ -63,6 +62,8 @@ program TruckInOut;
   SelectInboundDB         : constant integer := 121;  
   YNClearALLInbounds      : constant integer := 122;
   YNClearOneInbound       : constant integer := 123;
+  --Selection Mode
+  SelectTruckID_WeighOut  : constant integer := 124;
 
   -- Setup Modes
   SetupEnterSPasswordMode  : constant integer := 999;
@@ -334,22 +335,16 @@ end;
     i : integer;    
   begin
 
-      if g_iSelect = 11 or g_iSelect = 12 or g_iSelect = 13 then   
+      if g_iSelect = 142 or g_iSelect = 143 or g_iSelect = 144 then   
         g_iWidgetNum := 1;
-      elsif g_iSelect = 14 or g_iSelect = 15 or g_iSelect = 16 then
+      elsif g_iSelect = 145 or g_iSelect = 146 or g_iSelect = 147 then
         g_iWidgetnum := 2;
-      elsif g_iSelect = 17 or g_iSelect = 18 or g_iSelect = 19 then
+      elsif g_iSelect = 148 or g_iSelect = 149 or g_iSelect = 150 then
         g_iWidgetNum := 3;
-      elsif g_iSelect = 20 or g_iSelect = 21 or g_iSelect = 22 then
+      elsif g_iSelect = 151 or g_iSelect = 152 or g_iSelect = 153 then
         g_iWidgetNum := 4;
-      elsif g_iSelect = 23 or g_iSelect = 24 or g_iSelect = 25 then
+      elsif g_iSelect = 154 or g_iSelect = 155 or g_iSelect = 156 then
         g_iWidgetNum := 5;
-      elsif g_iSelect = 26 or g_iSelect = 27 or g_iSelect = 28 then
-        g_iWidgetNum := 6;
-      elsif g_iSelect = 29 or g_iSelect = 30 or g_iSelect = 31 then
-        g_iWidgetNum := 7;
-      elsif g_iSelect = 32 or g_iSelect = 33 or g_iSelect = 34 then
-        g_iWidgetNum := 8;
       end if;
 
       i := (g_iPage - 1) * g_ciMaxPerSelectScreen + g_iWidgetNum;  
@@ -696,6 +691,7 @@ end;
     sMessage : string;
   begin 
     
+    --makes upper case
     sValidFor := UCase$(sValidFor);
     
     if sValidFor = "S" then
@@ -1302,7 +1298,55 @@ end;
         SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
       end if; 
+
+    -----------------------------------------------
+    -----------NEW Selection Mode Process----------
+    -----------------------------------------------
+    elsif EntryMode = SelectTruckID_WeighOut then 
       
+      if IsValid(sTemp, "S", 15) then
+    
+        InboundDB.ID := sTemp;
+        g_sysResult1 := InboundDB.FindFirst(Inbound_Id);   
+        g_Decimal := Locate(sTemp, ".");
+        if g_sysResult1 = SysOk then
+          g_bTareOption := False;
+          GetInboundWgtBasedUnits;
+          --if g_iNbrofProducts >= 2 then
+            --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
+          --else
+            --if g_iNbrofCustomers >= 2 then
+              --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
+            --else
+              --EntryMode := CapturingOutboundWeight;   
+              --WaitSS(g_iTotalScale); 
+            --end if;
+          --end if;        
+        else
+          -- Check Keyed Tare Option
+          GetTare(g_iTotalScale, g_uUnits, rTareWgt); 
+          g_bTareOption := True;
+          if rTareWgt = 0.0 then           
+            SetLabelText(lbSts1, "Truck Not Weighed In");
+            ReadytoProcessTruck(100); 
+          --else
+            --if g_iNbrofProducts >= 2 then
+              --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
+            --else
+              --if g_iNbrofCustomers >= 2 then
+                --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
+              --else
+                --EntryMode := CapturingKeyTareWeight;   
+                --WaitSS(1);      
+              --end if; 
+            --end if;        
+          end if;
+        end if;             
+      else     
+        SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
+        ReadytoProcessTruck(100); 
+      end if; 
+
     elsif EntryMode = YNClearALLInbounds then
 
       SelectScreen(g_ciDList);
@@ -2085,10 +2129,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
 
     if g_iSelect <> 0 then
-      if EntryMode = SelectInboundDB then
-        InboundDB.ID := g_arDisplay[GetSelection_1].sID;
+      if EntryMode = SelectTruckID_WeighOut then
+        ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
         if InboundDB.FindFirst(1) = SysOk then        
-          SelectScreen(g_ciNetWeight);         
+          SelectScreen(g_ciNetWeight);
+          EntryMode :=  SelectInboundDB;        
           --Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
           --Loading(300);
         else 
@@ -2155,6 +2200,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(g_iWidget - 2, "#BB0000");
     end if;
     g_iSelect := g_iWidget;
+    EntryMode := SelectTruckID_WeighOut;
 
   end;  
 
@@ -2335,7 +2381,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
       SelectInboundtoWeighOut;
-      EntryMode := SelectInboundDB;
+
       WO_Selection;
       g_iSelect := 0;
 
