@@ -95,8 +95,9 @@ program TruckInOut;
   LoadTruck   : constant integer := 4000;
     CancelTruck   : constant integer := 4001;  
 
+  g_ciMaxPerSelectScreen    : constant integer := 5;
   g_ciMaxPerScreen          : constant integer := 8; 
-  g_ciMaxRecords            : constant integer := 1000;  
+  g_ciMaxRecords            : constant integer := 1000;
 
   Blank : constant string := "";      
 
@@ -155,7 +156,7 @@ program TruckInOut;
     end record;     
 
  type DisplayArrays is array [g_ciMaxRecords] of DisplayRecord;
-  g_arDisplay : DisplayArrays; 
+  g_arDisplay : DisplayArrays;
 
   InboundDB : Inbounddatabase; 
   ProductDB : ProductDatabase;
@@ -351,7 +352,7 @@ end;
         g_iWidgetNum := 8;
       end if;
 
-      i := (g_iPage - 1) * g_ciMaxPerScreen + g_iWidgetNum;  
+      i := (g_iPage - 1) * g_ciMaxPerSelectScreen + g_iWidgetNum;  
     
     return i;  
       
@@ -514,7 +515,7 @@ end;
     j := 1;   
     
     -- Populate Screen
-    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerScreen   
+    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerSelectScreen   
     loop    
       SetLabelText(i, g_arDisplay[j].sID);
       SetLabelText(i + 1, g_arDisplay[j].sName); 
@@ -593,8 +594,8 @@ end;
     -- Find out where we are in the array
     if tmpPage = 1 then
       i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
-    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerScreen) then
-      i := (tmpPage * g_ciMaxPerScreen) - 7;      
+    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerSelectScreen) then
+      i := (tmpPage * g_ciMaxPerSelectScreen) - 7;      
     else
       i := 1;
       g_iPage := 1;              
@@ -2139,16 +2140,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(i, "Black");
     end loop;
 
-    if iTouch = 2 then
+    if iTouch = 1 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget + 2, "#BB0000");
       
-    elsif iTouch = 0 then
+    elsif iTouch = 2 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
-    elsif iTouch = 1 then
+    elsif iTouch = 0 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       SetwidgetColor(g_iWidget - 2, "#BB0000");
@@ -2282,8 +2283,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnExt4 then
 			--DisplayStatus(Blank);
-      --EntryMode := LastEntryMode;
+      
       SelectScreen(g_ciMain);
+      EntryMode := WeighMode;
       --for i := minLab2 to maxLab2 
       --loop
       --  SetwidgetColor(i, "Black");
@@ -2333,6 +2335,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
       SelectInboundtoWeighOut;
+      EntryMode := SelectInboundDB;
       WO_Selection;
       g_iSelect := 0;
 
