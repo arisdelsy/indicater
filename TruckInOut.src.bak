@@ -1329,15 +1329,15 @@ end;
           if rTareWgt = 0.0 then           
             SetLabelText(lbSts1, "Truck Not Weighed In");
             ReadytoProcessTruck(100); 
-          --else
+          else
             --if g_iNbrofProducts >= 2 then
               --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
             --else
               --if g_iNbrofCustomers >= 2 then
                 --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
               --else
-                --EntryMode := CapturingKeyTareWeight;   
-                --WaitSS(1);      
+                EntryMode := CapturingKeyTareWeight;   
+                WaitSS(1);      
               --end if; 
             --end if;        
           end if;
@@ -1579,7 +1579,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end; 
 --interupt truck ID entry
---if truck ID is entered then exec Net weight
+
   procedure StoreTransaction;
   begin
 
@@ -2132,16 +2132,21 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       if EntryMode = SelectTruckID_WeighOut then
         ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
         if InboundDB.FindFirst(1) = SysOk then        
+          CalcNetWeight;
+          DisplayTruck;
+          --StoreTransaction;
           SelectScreen(g_ciNetWeight);
-          EntryMode :=  SelectInboundDB;        
+              
           --Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
           --Loading(300);
         else 
           DisplayStatus("Error: Invalid ID");
+          EntryMode :=  SelectInboundDB;    
         end if;
       end if;
     else
       Displaystatus("Select One to Weight Out");
+      EntryMode :=  SelectInboundDB;    
     end if;
 
   end;
@@ -2435,6 +2440,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnbck then
       SelectScreen(g_ciWSelect);
+
       --EntryMode := WeighMode;
 
     elsif g_iWidget = btnRegs then
