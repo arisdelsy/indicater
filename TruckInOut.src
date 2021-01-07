@@ -5,11 +5,9 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.4-----------------------------------
+----------------------------------ASCV1.2.5-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
---FIX: TRUCK ID SHOULD CHANGE DURING WEIGH OUT ON THE WIDGET 
---Have selection id pass to Stemp vaiable
---Have the truck id get passed from the Trans database
+--FIX issue with keying in ID still processing invalid entry
 
 program TruckInOut; 
  
@@ -1253,7 +1251,9 @@ end;
       else     
         SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
-      end if;   
+      end if;  
+    -------------------------NEW CHAGNES---------------------------- 
+    --Under the entry mode changes I entered it to select screen
     --weigh out
     elsif EntryMode = EnterTruckID_WeighOut then 
       
@@ -1272,7 +1272,8 @@ end;
               PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
             else
               EntryMode := CapturingOutboundWeight;   
-              WaitSS(g_iTotalScale); 
+              WaitSS(g_iTotalScale);
+              --SelectScreen(g_ciNetWeight);
             end if;
           end if;        
         else
@@ -1290,7 +1291,8 @@ end;
                 PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
               else
                 EntryMode := CapturingKeyTareWeight;   
-                WaitSS(1);      
+                WaitSS(1);
+                --SelectScreen(g_ciNetWeight);      
               end if; 
             end if;        
           end if;
@@ -1330,15 +1332,15 @@ end;
           if rTareWgt = 0.0 then           
             SetLabelText(lbSts1, "Truck Not Weighed In");
             ReadytoProcessTruck(100); 
-          --else
+          else
             --if g_iNbrofProducts >= 2 then
               --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
             --else
               --if g_iNbrofCustomers >= 2 then
                 --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
               --else
-                --EntryMode := CapturingKeyTareWeight;   
-                --WaitSS(1);      
+                EntryMode := CapturingKeyTareWeight;   
+                WaitSS(1);      
               --end if; 
             --end if;        
           end if;
@@ -1910,7 +1912,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     ------------------------------------------------
     --DisplayTruck;
     --Keeps our buttons off on initial
-    TurnOffWeighOutButtons;           
+    TurnOffWeighOutButtons;
+    ClearTruck;           
     g_sProductID := Blank;
     g_sProductName := Blank;
     g_sProductConversionUnits := Blank;
@@ -2047,9 +2050,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         end if; 
 
         --storing of net weight
-        TransDB.Net :=( TransDB.Gross - TransDB.Tare);
+        TransDB.Net :=(TransDB.Gross - TransDB.Tare);
         StoreTransaction;
-        
+
       -------------------------------------------
       ----------------LOOK HERE------------------
       -------------------------------------------
@@ -2288,7 +2291,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnID then
       SetLabelText(lbSts1, Blank);
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-      SelectScreen(g_ciNetWeight);
+      --SelectScreen(g_ciNetWeight);
 
     elsif g_iWidget = lbSet7 then 
       PromptForEntry("Enter Product ID", SetupProductID, Blank,1);
@@ -2398,7 +2401,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
       SelectInboundtoWeighOut;
-
       WO_Selection;
       g_iSelect := 0;
 
@@ -2412,10 +2414,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnNo then
       ProcessDataEntry("N");
       g_iDelete := 0;
-
------------------------------------------------------------
-    elsif g_iWidget = lblTruck then
-      SelectScreen(g_ciDList);
     
     elsif g_iWidget = btnNet then
     	SelectScreen(g_ciNetWeight);
@@ -2449,6 +2447,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           EntryMode := WeighMode;
           SelectScreen(g_ciMain);
         end if;
+
+    elsif g_iWidget = btnNPr  then
+      Print(GrossFmt);
 
     elsif g_iWidget = btnbck then
       SelectScreen(g_ciWSelect);
