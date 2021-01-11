@@ -113,6 +113,10 @@ program TruckInOut;
   g_uUnits : Units; 
   g_iWaitSSScale : integer;  
   g_sysResult1 : SysCode;
+  
+  --Selection system result
+  g_sysResult_1 : SysCode;
+
 	g_sysResult2 : SysCode;
   g_iDebug : integer;
   g_iStoredTares : stored integer;
@@ -1310,9 +1314,9 @@ end;
       if IsValid(sTemp, "S", 15) then
     
         InboundDB.ID := sTemp;
-        g_sysResult1 := InboundDB.FindFirst(Inbound_Id);   
+        g_sysResult_1 := InboundDB.FindFirst(Inbound_Id);   
         g_Decimal := Locate(sTemp, ".");
-        if g_sysResult1 = SysOk then
+        if g_sysResult_1 = SysOk then
           g_bTareOption := False;
           GetInboundWgtBasedUnits;
           --if g_iNbrofProducts >= 2 then
@@ -1329,18 +1333,19 @@ end;
           -- Check Keyed Tare Option
           GetTare(g_iTotalScale, g_uUnits, rTareWgt); 
           g_bTareOption := True;
-          if rTareWgt = 0.0 then           
+          if g_arDisplay[GetSelection].sID <> InboundDB.Id then
+          --if rTareWgt = 0.0 then           
             SetLabelText(lbSts1, "Truck Not Weighed In");
             ReadytoProcessTruck(100); 
-          --else
+          else
             --if g_iNbrofProducts >= 2 then
               --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
             --else
               --if g_iNbrofCustomers >= 2 then
                 --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
               --else
-                --EntryMode := CapturingKeyTareWeight;   
-                --WaitSS(1);      
+                EntryMode := CapturingKeyTareWeight;   
+                WaitSS(1);      
               --end if; 
             --end if;        
           end if;
@@ -2050,9 +2055,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         end if; 
 
         --storing of net weight
-        TransDB.Net :=( TransDB.Gross - TransDB.Tare);
+        TransDB.Net :=(TransDB.Gross - TransDB.Tare);
         StoreTransaction;
-        SelectScreen(g_ciNetWeight);
+
       -------------------------------------------
       ----------------LOOK HERE------------------
       -------------------------------------------
@@ -2284,11 +2289,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnWOut and EntryMode = WeighMode then
       --SetLabelText(lbSts1, Blank);
       --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-      --SelectScreen(g_ciWSelect);
-      DisplayInboundDB_1;
       EntryMode := SelectInboundDB;
+      DisplayInboundDB_1;
+      
 
-    elsif g_iWidget = btnID then
+    elsif g_iWidget = btnID and EntryMode = SelectInboundDB then
       SetLabelText(lbSts1, Blank);
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
       --SelectScreen(g_ciNetWeight);
@@ -2453,6 +2458,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnbck then
       SelectScreen(g_ciWSelect);
+      --rTareWgt := 0.0;
+      ClearTruck;
 
       --EntryMode := WeighMode;
 
