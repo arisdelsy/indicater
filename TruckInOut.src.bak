@@ -17,7 +17,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2.4"; --Version of our program
+  as_Version            : constant string  := "1.2.5"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -1333,7 +1333,7 @@ end;
           -- Check Keyed Tare Option
           GetTare(g_iTotalScale, g_uUnits, rTareWgt); 
           g_bTareOption := True;
-          if g_arDisplay[GetSelection].sID <> InboundDB.Id then
+          if g_rInboundWgt = 0 then
           --if rTareWgt = 0.0 then           
             SetLabelText(lbSts1, "Truck Not Weighed In");
             ReadytoProcessTruck(100); 
@@ -2171,6 +2171,24 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;
 
+  procedure WO_Input;
+  begin
+
+     if EntryMode = SelectInboundDB then
+       PromptForEntry("Enter Truck ID", SelectTruckID_WeighOut, Blank,1);
+       if InboundDB.FindFirst(1) = SysOk then        
+         CalcNetWeight;
+         DisplayTruck;
+         --StoreTransaction;
+         SelectScreen(g_ciNetWeight);
+              
+        else 
+          DisplayStatus("Error: Invalid ID");
+          EntryMode :=  SelectInboundDB;    
+        end if;
+      end if;
+  end;
+
   procedure SelectInboundtoDelete;
     iTouch : integer;
     i : integer;
@@ -2293,9 +2311,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       DisplayInboundDB_1;
       
 
-    elsif g_iWidget = btnID and EntryMode = SelectInboundDB then
+    elsif g_iWidget = btnID then
       SetLabelText(lbSts1, Blank);
-      PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
+      WO_Input;
+      --PromptForEntry("Enter Truck ID", SelectTruckID_WeighOut, Blank,1); 
+      --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
       --SelectScreen(g_ciNetWeight);
 
     elsif g_iWidget = lbSet7 then 
@@ -2457,7 +2477,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       Print(GrossFmt);
 
     elsif g_iWidget = btnbck then
+      EntryMode := SelectInboundDB;
       SelectScreen(g_ciWSelect);
+      g_rInboundWgt := 0;
       --rTareWgt := 0.0;
       ClearTruck;
 
