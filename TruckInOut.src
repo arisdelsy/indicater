@@ -7,7 +7,7 @@
 ------------------------------------------------------------------------------
 ----------------------------------ASCV1.2.5-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
---FIX issue with keying in ID still processing invalid entry
+--FIX issue with keying in ID to populate the truck correctly
 
 program TruckInOut; 
  
