@@ -5,9 +5,9 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.5-----------------------------------
+----------------------------------ASCV1.2.6-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
---FIX issue with keying in ID to populate the truck correctly
+--FIX issue with Net Weight holding previous selection value
 
 program TruckInOut; 
  
@@ -17,7 +17,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2.5"; --Version of our program
+  as_Version            : constant string  := "1.2.6"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -593,14 +593,14 @@ end;
     if tmpPage = 1 then
       i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
     elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerSelectScreen) then
-      i := (tmpPage * g_ciMaxPerSelectScreen) - 7;      
+      i := (tmpPage * g_ciMaxPerSelectScreen) - 4;      
     else
       i := 1;
       g_iPage := 1;              
     end if;
 
     b := minLab2;
-    j := i + 7; 
+    j := i + 4; 
     
     -- Display the top of the list if we have reach the end 
     if g_arDisplay[i].sID = Blank then -- and EntryMode <> SetupSelectTruck then
@@ -993,14 +993,26 @@ end;
                                                                                                      
   end;
 
+  --procedure CalcNetWeight;
+  --rTotalWgt : real;
+  --displayNet  : string;
+  --begin
+      --rTotalWgt := TransDB.Net;
+      --TransDB.CustId := CustomerDB.Id;
+      --g_currentNet := rTotalWgt - ReportDB.Net;
+      --displayNet  :=  RealToString(rTotalWgt, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
+      --SetLabelText(lbl136, displayNet);
+  --end;
+
 ---------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
-  procedure DisplayTruck;  --Display Truck ID
-  begin
-      displayTruckid := InboundDB.Id; 
-      SetLabelText(lbl138, displayTruckid);
-      SetLabelText(lblTruck, displayTruckid);
-  end;
+  --procedure DisplayTruck;  --Display Truck ID
+  --begin
+      --displayTruckid := InboundDB.Id; 
+      --SetLabelText(lbl138, displayTruckid);
+      --SetLabelText(lblTruck, displayTruckid);
+      --CalcNetWeight;
+  --end;
 
   procedure GoIntoSetupMenu;  -- Enters Setup Menu
     riQube2 : real; 
@@ -1246,7 +1258,7 @@ end;
           EntryMode := CapturingInboundWeight;   
           WaitSS(1);
           ---------NEW
-          DisplayTruck;          
+          --DisplayTruck;          
         else     
           SetLabelText(lbSts1, "Truck Already Weighed In"); 
           ReadytoProcessTruck(100); 
@@ -1324,7 +1336,7 @@ end;
             --if g_iNbrofCustomers >= 2 then
               --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
             --else
-              EntryMode := CapturingOutboundWeight;   
+              EntryMode := CapturingOutboundWeight;
               WaitSS(g_iTotalScale); 
             --end if;
           --end if;        
@@ -1787,24 +1799,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;  
 
-
+------------------------------Added Blank for InboundDB.Id
   procedure ClearTruck;
   begin
       displayTruckid := Blank;
       SetLabelText(lbl138, Blank);
       SetLabelText(lblTruck, Blank);
+      --InboundDB.Id := Blank;
+      g_sysResult1 := SysNoSuchRecord;
+      --g_sysResult_1 := ;
   end;
 
-  procedure CalcNetWeight;
-  rTotalWgt : real;
-  displayNet  : string;
-  begin
-      rTotalWgt := TransDB.Net;
-      TransDB.CustId := CustomerDB.Id;
-      g_currentNet := rTotalWgt - ReportDB.Net;
-      displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
-      SetLabelText(lbl136, displayNet);
-  end;
 
   procedure PrintCustomerByProduct;
     dtTemp : datetime := SystemTime;
@@ -2099,6 +2104,27 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;   
 
+  procedure CalcNetWeight;
+  rTotalWgt : real;
+  displayNet  : string;
+  begin
+      rTotalWgt := TransDB.Net;
+      TransDB.CustId := CustomerDB.Id;
+      --g_currentNet := rTotalWgt - ReportDB.Net;
+      displayNet  :=  RealToString(rTotalWgt, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
+      SetLabelText(lbl136, displayNet);
+  end;
+
+  procedure DisplayTruck;  --Display Truck ID
+  begin
+      displayTruckid := InboundDB.Id; 
+      SetLabelText(lbl138, displayTruckid);
+      SetLabelText(lblTruck, displayTruckid);
+      CalcNetWeight;
+  end;
+
+
+
 	handler Timer29Trip;
 	begin
 	
@@ -2151,7 +2177,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       if EntryMode = SelectTruckID_WeighOut then
         ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
         if InboundDB.FindFirst(1) = SysOk then        
-          CalcNetWeight;
+          --CalcNetWeight;
           DisplayTruck;
           --StoreTransaction;
           SelectScreen(g_ciNetWeight);
@@ -2176,7 +2202,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
      if EntryMode = SelectInboundDB then
        PromptForEntry("Enter Truck ID", SelectTruckID_WeighOut, Blank,1);
        if InboundDB.FindFirst(1) = SysOk then        
-         CalcNetWeight;
+         --CalcNetWeight;
          DisplayTruck;
          --StoreTransaction;
          SelectScreen(g_ciNetWeight);
