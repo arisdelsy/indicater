@@ -149,7 +149,7 @@ program TruckInOut;
   displayTruckid  : string;
 
 -- Variable storing temp string entry
-  sTemp : string;
+  sTemp : string := Blank;
 
   type boolean is (False,True); 
   g_bUpdate : boolean;
