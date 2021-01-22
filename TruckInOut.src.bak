@@ -148,6 +148,9 @@ program TruckInOut;
   --variable holding current truck id
   displayTruckid  : string;
 
+-- Variable storing temp string entry
+  sTemp : string;
+
   type boolean is (False,True); 
   g_bUpdate : boolean;
   g_bTareOption : boolean;
@@ -1803,7 +1806,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       displayTruckid := Blank;
       SetLabelText(lbl138, Blank);
       SetLabelText(lblTruck, Blank);
-      --InboundDB.Id := Blank;
+      sTemp := Blank;
       g_sysResult1 := SysNoSuchRecord;
       --g_sysResult_1 := ;
   end;
@@ -2131,16 +2134,13 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 	end;  
 
   handler UserEntry;  -- Processing a data entry method
-    sTemp : string;  
+    --sTemp : string;  
   begin   
   
     sTemp := GetEntry; 
     
     if EventKey = EnterKey then     --Enter key pressed
-      ProcessDataEntry(sTemp);
-      --if EntryMode = EnterTruckID_WeighOut then
-        --SetupStartTimer(12, 100, TimerOneShot);
-      --end if; 
+      ProcessDataEntry(sTemp); 
     else                            --Cancel key pressed    
       ProcessPromptCancel;    
     end if;
