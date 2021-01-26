@@ -229,30 +229,6 @@ program TruckInOut;
 
  end; 
 
- procedure TurnOnWeighOutButtons;
- begin
-
-  SetWidgetVisibility(btnNet, VOn);
-  SetWidgetVisibility(btnPrint, VOn);
-  SetWidgetVisibility(barNet, VOn);
-  SetWidgetVisibility(barPrint, VOn);
-  SetWidgetColor(barPrint, "#8D0018");
-  SetWidgetColor(barNet, "#8D0018");    
-  SetBargraphLevel(barPrint, 100);
-  SetBargraphLevel(barNet, 100);
-
- end;
-
-procedure TurnOffWeighOutButtons;
-begin
-
-  SetWidgetVisibility(btnNet, VOff);
-  SetWidgetVisibility(btnPrint, VOff);
-  SetWidgetVisibility(barNet, VOff);
-  SetWidgetVisibility(barPrint, VOff);
-
-end;
-
   procedure Delete25Percent;  
     i : integer;  
     dbTransSave : TransDatabase;   
@@ -996,27 +972,6 @@ end;
                                                                                                      
   end;
 
-  --procedure CalcNetWeight;
-  --rTotalWgt : real;
-  --displayNet  : string;
-  --begin
-      --rTotalWgt := TransDB.Net;
-      --TransDB.CustId := CustomerDB.Id;
-      --g_currentNet := rTotalWgt - ReportDB.Net;
-      --displayNet  :=  RealToString(rTotalWgt, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
-      --SetLabelText(lbl136, displayNet);
-  --end;
-
----------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------
-  --procedure DisplayTruck;  --Display Truck ID
-  --begin
-      --displayTruckid := InboundDB.Id; 
-      --SetLabelText(lbl138, displayTruckid);
-      --SetLabelText(lblTruck, displayTruckid);
-      --CalcNetWeight;
-  --end;
-
   procedure GoIntoSetupMenu;  -- Enters Setup Menu
     riQube2 : real; 
   begin
@@ -1052,42 +1007,6 @@ end;
 
     
   end; 
-
-  ----------------------------------------------------
-  ------------------Loading Procedure-----------------
-  ----------------------------------------------------
-  procedure Loading (iTime : integer);
-  begin
-
-    SetupStartTimer(2, iTime, TimerOneShot);
-    
-    for iCount := 3 to 0 step -1
-    loop
-      bar_level := 100 / iCount;
-      --SetBargraphLevel(bar151, bar_level);
-    end loop;
-
-
-
-  end;
- 
-  --------------------------------------------------
-  ------------------Cancel Procedure----------------
-  --------------------------------------------------
-  procedure Cancel;
-  begin
-
-    --Stop and reset timer
-    --StopTimer(2);
-    --ResetTimer(2);
-
-    --Clear selection procedure
-    ClearWidgetsData_1;
-
-    --Bring user back to selection screen
-    SelectScreen(g_ciWSelect);
-
-  end;
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
   begin 
@@ -1560,6 +1479,7 @@ end;
       displayTruckid := InboundDB.Id; 
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
+      --SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal));
   end;
 
   handler Timer12Trip;
@@ -1966,10 +1886,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     DisplayStatus(Blank); 
     StopTimer(25);   
     TurnOffWeighInOutButtons;
-    ------------------------------------------------
-    --DisplayTruck;
-    --Keeps our buttons off on initial
-    TurnOffWeighOutButtons;
     ClearTruck;           
     g_sProductID := Blank;
     g_sProductName := Blank;
@@ -2113,13 +2029,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
       -------------------------------------------
       ----------------LOOK HERE------------------
-      -------------------------------------------
-
-
---Turned off our buttons from activating
-        --Turn on our buttons
-        --TurnOnWeighOutButtons;
-       
+      -------------------------------------------       
         
         ClearTare(g_iTotalScale); 
         if g_iStoredTares = 0 then 
@@ -2237,11 +2147,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         if InboundDB.FindFirst(1) = SysOk then        
           --StoreTransaction;
           SetupStartTimer(13, 100, TimerOneShot);
-          --CalcNetWeight;
-          --DisplayTruck;            
-          --SelectScreen(g_ciNetWeight);              
-          --Setlabeltext(lbLoad,"Selecting ID:  " + InboundDB.ID );
-          --Loading(300);
         else 
           DisplayStatus("Error: Invalid ID");
           EntryMode :=  SelectInboundDB;    
@@ -2254,25 +2159,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;
 
-  --procedure WO_Input;
-  --begin
-
-     --if EntryMode = SelectInboundDB then
-      --EntryMode := EnterTruckID_WeighOut;
-      --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1);
-      --if InboundDB.FindFirst(1) = SysOk then        
-        --CalcNetWeight;
-        --SetupStartTimer(13, 100, TimerOneShot);
-        --DisplayTruck;
-        --StoreTransaction;     
-
-      --else 
-          --DisplayStatus("Error: Invalid ID");
-          --EntryMode :=  SelectInboundDB;    
-        --end if;
-      --end if;
-
-  --end;
 
   procedure SelectInboundtoDelete;
     iTouch : integer;
@@ -2525,22 +2411,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       ProcessDataEntry("N");
       g_iDelete := 0;
 
-    elsif g_iWidget = btnPrint  then
-      PrintOutboundTicket;
-      TurnOffWeighOutButtons;
-      ClearTruck;
-        if g_iTruckExit = 1 then
-          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-          TurnOffWeighInOutButtons;    
-          EntryMode := ExitScale;
-        else
-          SetLabelText(lbSts1, "Weigh Out Complete"); 
-          EntryMode := WeighMode;
-        end if;
-
     elsif g_iWidget = btnprt2  then
       PrintOutboundTicket;
-      TurnOffWeighOutButtons;
       ClearTruck;
         if g_iTruckExit = 1 then
           SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
