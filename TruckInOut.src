@@ -1008,6 +1008,25 @@ program TruckInOut;
     
   end; 
 
+  procedure CalcNetWeight;
+  rTotalWgt : real;
+  displayNet  : string;
+  begin
+      rTotalWgt := TransDB.Net;
+      TransDB.CustId := CustomerDB.Id;
+      g_currentNet := rTotalWgt - ReportDB.Net;
+      displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
+      SetLabelText(lbl136, displayNet);
+  end;
+
+  procedure DisplayTruck;  --Display Truck ID
+  begin
+      displayTruckid := InboundDB.Id; 
+      SetLabelText(lbl138, displayTruckid);
+      SetLabelText(lblTruck, displayTruckid);
+      SetLabelText(idtare, RealToString(TransDB.Gross, 6, g_iDecimal));
+  end;
+
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
   begin 
   
@@ -1028,10 +1047,15 @@ program TruckInOut;
       EntryMode := WeighMode;
     elsif Entrymode = SetupEnterTPasswordMode then
       EntryMode := LastEntryMode;
+    --elsif EntryMode = SelectInboundDB then 
+      --EntryMode := WeighMode;
+      --SelectScreen(g_ciMain);    
     else   
-      DisplayStatus(Blank); 
-      SetLabelText(lbSts1, Blank);  
-      EntryMode := NoMode;  
+      --DisplayStatus(Blank); 
+      --SetLabelText(lbSts1, Blank);  
+      --EntryMode := NoMode;  
+      SetLabelText(lbSts1, Blank); 
+      EntryMode := WeighMode;
     end if;
     
   end;    
@@ -1180,7 +1204,7 @@ program TruckInOut;
           EntryMode := CapturingInboundWeight;   
           WaitSS(1);
           ---------NEW
-          --DisplayTruck;          
+          DisplayTruck;          
         else     
           SetLabelText(lbSts1, "Truck Already Weighed In"); 
           ReadytoProcessTruck(100); 
@@ -1463,30 +1487,16 @@ program TruckInOut;
           
   end; 
 
-  procedure CalcNetWeight;
-  rTotalWgt : real;
-  displayNet  : string;
-  begin
-      rTotalWgt := TransDB.Net;
-      TransDB.CustId := CustomerDB.Id;
-      g_currentNet := rTotalWgt - ReportDB.Net;
-      displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
-      SetLabelText(lbl136, displayNet);
-  end;
-
-  procedure DisplayTruck;  --Display Truck ID
-  begin
-      displayTruckid := InboundDB.Id; 
-      SetLabelText(lbl138, displayTruckid);
-      SetLabelText(lblTruck, displayTruckid);
-      --SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal));
-  end;
 
   handler Timer12Trip;
   begin
     
     CalcNetWeight;
-    DisplayTruck;            
+    DisplayTruck;           
+    --SetWidgetColor(bar182, "#8D0018");
+    --SetWidgetColor(bar183, "#8D0018");    
+    SetBargraphLevel(bar182, 100);
+    SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
 
   end;
@@ -1519,11 +1529,6 @@ program TruckInOut;
     SetWidgetColor(BarOut, "#8D0018");    
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
-    -- widget colors for net weight and print buttons
-    --SetWidgetColor(barNet, "#8D0018");
-    --SetWidgetColor(barPrint, "#8D0018");    
-    --SetBargraphLevel(barNet, 100);
-    --SetBargraphLevel(barPrint, 100);
   end;
 --------- initialization of scales' units and count
   procedure HowmanyScales;
@@ -1958,7 +1963,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         g_sysResult1 := InboundDB.Add;
         
         if g_sysResult1 = SysOk then      
-          PrintInboundTicket;  -- Print Inbound Ticket
+          --PrintInboundTicket;  -- Print Inbound Ticket
           
           if g_iTruckExit = 1 then
             SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
@@ -2063,27 +2068,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;   
 
-  --procedure CalcNetWeight;
-  --rTotalWgt : real;
-  --displayNet  : string;
-  --begin
-      --rTotalWgt := TransDB.Net;
-      --TransDB.CustId := CustomerDB.Id;
-      --g_currentNet := rTotalWgt - ReportDB.Net;
-      --displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
-      --SetLabelText(lbl136, displayNet);
-  --end;
-
-  --procedure DisplayTruck;  --Display Truck ID
-  --begin
-      --displayTruckid := InboundDB.Id; 
-      --SetLabelText(lbl138, displayTruckid);
-      --SetLabelText(lblTruck, displayTruckid);
-      --CalcNetWeight;
-  --end;
-
-
-
 	handler Timer29Trip;
 	begin
 	
@@ -2130,8 +2114,12 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
 
     CalcNetWeight;
-    DisplayTruck;            
-    SelectScreen(g_ciNetWeight);   
+    DisplayTruck;           
+    --SetWidgetColor(bar182, "#8D0018");
+    --SetWidgetColor(bar183, "#8D0018");    
+    SetBargraphLevel(bar182, 100);
+    SetBargraphLevel(bar183, 100);
+    SelectScreen(g_ciNetWeight); 
 
   end;
 
@@ -2429,11 +2417,20 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       Print(GrossFmt);
 
     elsif g_iWidget = btnbck then
-      EntryMode := SelectInboundDB;
+      --if EntryMode = SelectInboundDB then
+      EntryMode := WeighMode;
       g_rInboundWgt := 0;
       ClearTruck;
-      SelectScreen(g_ciWSelect);
-      --EntryMode := WeighMode;
+      SelectScreen(g_ciMain);      
+      --else
+        --EntryMode := SelectInboundDB;
+        --g_rInboundWgt := 0;
+        --ClearTruck;
+        --SelectScreen(g_ciWSelect);
+      --end if;
+
+    elsif g_iWidget = btnAxle then
+      Print(AuxFmt3);
 
     elsif g_iWidget = btnRegs then
      if EntryMode = WeighMode or EntryMode = NoMode or EntryMode = ExitScale then 
