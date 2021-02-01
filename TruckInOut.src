@@ -1047,9 +1047,15 @@ program TruckInOut;
       EntryMode := WeighMode;
     elsif Entrymode = SetupEnterTPasswordMode then
       EntryMode := LastEntryMode;
+<<<<<<< Updated upstream
     --elsif EntryMode = SelectInboundDB then 
       --EntryMode := WeighMode;
       --SelectScreen(g_ciMain);    
+=======
+    elsif EntryMode = EnterTruckID_WeighOut then 
+      EntryMode := WeighMode;
+      SelectScreen(g_ciMain);    
+>>>>>>> Stashed changes
     else   
       --DisplayStatus(Blank); 
       --SetLabelText(lbSts1, Blank);  
@@ -1487,6 +1493,7 @@ program TruckInOut;
           
   end; 
 
+<<<<<<< Updated upstream
 
   handler Timer12Trip;
   begin
@@ -1521,6 +1528,8 @@ program TruckInOut;
 
   end;
 
+=======
+>>>>>>> Stashed changes
   procedure ScreenSetup;
   begin
 
@@ -1780,7 +1789,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetLabelText(lblTruck, Blank);
       sTemp := Blank;
       g_sysResult1 := SysNoSuchRecord;
+<<<<<<< Updated upstream
       --g_sysResult_1 := SysNoSuchRecord;
+=======
+      g_sysResult_1 := SysNoSuchRecord;
+>>>>>>> Stashed changes
   end;
 
 
@@ -2132,7 +2145,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
         if InboundDB.FindFirst(1) = SysOk then        
           --StoreTransaction;
+<<<<<<< Updated upstream
           SetupStartTimer(13, 100, TimerOneShot);
+=======
+          SetupStartTimer(12, 100, TimerOneShot);
+>>>>>>> Stashed changes
         else 
           DisplayStatus("Error: Invalid ID");
           EntryMode :=  SelectInboundDB;    
@@ -2194,7 +2211,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
+<<<<<<< Updated upstream
     elsif iTouch = 0 then
+=======
+    elsif iTouch = 1 then
+>>>>>>> Stashed changes
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       SetwidgetColor(g_iWidget - 2, "#BB0000");
