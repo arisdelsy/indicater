@@ -1780,7 +1780,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetLabelText(lblTruck, Blank);
       sTemp := Blank;
       g_sysResult1 := SysNoSuchRecord;
-      --g_sysResult_1 := ;
+      --g_sysResult_1 := SysNoSuchRecord;
   end;
 
 
@@ -2114,9 +2114,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
 
     CalcNetWeight;
-    DisplayTruck;           
-    --SetWidgetColor(bar182, "#8D0018");
-    --SetWidgetColor(bar183, "#8D0018");    
+    DisplayTruck;              
     SetBargraphLevel(bar182, 100);
     SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
