@@ -1047,17 +1047,9 @@ program TruckInOut;
       EntryMode := WeighMode;
     elsif Entrymode = SetupEnterTPasswordMode then
       EntryMode := LastEntryMode;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     --elsif EntryMode = SelectInboundDB then 
       --EntryMode := WeighMode;
       --SelectScreen(g_ciMain);    
-=======
-=======
->>>>>>> Stashed changes
-    elsif EntryMode = EnterTruckID_WeighOut then 
-      EntryMode := WeighMode;
-      SelectScreen(g_ciMain);    
     else   
       --DisplayStatus(Blank); 
       --SetLabelText(lbSts1, Blank);  
@@ -1495,10 +1487,6 @@ program TruckInOut;
           
   end; 
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
 
   handler Timer12Trip;
   begin
@@ -1533,11 +1521,7 @@ program TruckInOut;
 
   end;
 
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
   procedure ScreenSetup;
   begin
 
@@ -2152,12 +2136,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
         if InboundDB.FindFirst(1) = SysOk then        
           --StoreTransaction;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-          SetupStartTimer(13, 100, TimerOneShot);
-=======
-=======
->>>>>>> Stashed changes
           SetupStartTimer(12, 100, TimerOneShot);
         else 
           DisplayStatus("Error: Invalid ID");
@@ -2220,15 +2198,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+      
     elsif iTouch = 0 then
-=======
-    elsif iTouch = 1 then
->>>>>>> Stashed changes
-=======
-    elsif iTouch = 1 then
->>>>>>> Stashed changes
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       SetwidgetColor(g_iWidget - 2, "#BB0000");
