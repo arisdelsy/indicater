@@ -1024,7 +1024,7 @@ program TruckInOut;
       displayTruckid := InboundDB.Id; 
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
-      SetLabelText(idtare, RealToString(TransDB.Gross, 6, g_iDecimal));
+      SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal));
   end;
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
