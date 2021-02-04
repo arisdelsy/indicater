@@ -678,7 +678,7 @@ program TruckInOut;
     
     if sValidFor = "S" then
     
-      if Len(sTemp) = 0 or (Len(sTemp) > iLength and iLength <> 0) then  
+      if Len(sTemp) = 0 or (Len(sTemp) > iLength and iLength <> 0) or Left$(sTemp,1) = " " then  
         bResult := False;
         sMessage := "Required Entry - Try Again";  
       end if;      
@@ -688,7 +688,7 @@ program TruckInOut;
       if isDigits(sTemp) = False then
         bResult := False;  
         sMessage := "Invalid Number - Try Again";        
-      elsif (Len(sTemp) = 0 or StringToInteger(sTemp) < 1) and iLength = 0 then   -- iLength to 1 will allow zero for an entry
+      elsif (Len(sTemp) = 0 or StringToInteger(sTemp) < 1) and iLength = 0 or Left$(sTemp,1) = " " then   -- iLength to 1 will allow zero for an entry
         bResult := False;  
         sMessage := "Invalid Number (0) - Try Again";
       end if;      
@@ -698,7 +698,7 @@ program TruckInOut;
       if isDigits(sTemp) = False or StringToReal(sTemp) < 0 then     
         bResult := False;    
         sMessage := "Invalid Number - Try Again";
-      elsif (Len(sTemp) = 0 or StringToReal(sTemp) = 0) and iLength = 0 then  -- iLength to 1 will allow zero for an entry
+      elsif (Len(sTemp) = 0 or StringToReal(sTemp) = 0) and iLength = 0 or Left$(sTemp,1) = " " then  -- iLength to 1 will allow zero for an entry
         bResult := False;    
         sMessage := "Invalid Number (0) - Try Again";              
       end if;  
@@ -1046,10 +1046,7 @@ program TruckInOut;
       SetLabelText(lbSts1, Blank); 
       EntryMode := WeighMode;
     elsif Entrymode = SetupEnterTPasswordMode then
-      EntryMode := LastEntryMode;
-    --elsif EntryMode = SelectInboundDB then 
-      --EntryMode := WeighMode;
-      --SelectScreen(g_ciMain);    
+      EntryMode := LastEntryMode; 
     else   
       --DisplayStatus(Blank); 
       --SetLabelText(lbSts1, Blank);  
@@ -1218,7 +1215,7 @@ program TruckInOut;
     --weigh out
     elsif EntryMode = EnterTruckID_WeighOut then 
       
-      if IsValid(sTemp, "S", 15) then
+      if IsValid(sTemp, "S", 15) and len(stemp) > 0 then
     
         InboundDB.ID := sTemp;
         g_sysResult1 := InboundDB.FindFirst(Inbound_Id);   
@@ -1234,6 +1231,7 @@ program TruckInOut;
             --else
           EntryMode := CapturingOutboundWeight;   
           WaitSS(g_iTotalScale);
+          SetupStartTimer(12, 100, TimerOneShot);
             --end if;
           --end if;        
         else
@@ -1492,12 +1490,11 @@ program TruckInOut;
   begin
     
     CalcNetWeight;
-    DisplayTruck;           
-    --SetWidgetColor(bar182, "#8D0018");
-    --SetWidgetColor(bar183, "#8D0018");    
+    DisplayTruck;              
     SetBargraphLevel(bar182, 100);
     SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
+    g_iSelect := 0;
 
   end;
 
@@ -1507,16 +1504,14 @@ program TruckInOut;
      if EntryMode = SelectInboundDB then
       --EntryMode := EnterTruckID_WeighOut;
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1);
-      if InboundDB.FindFirst(1) = SysOk then        
+      --if InboundDB.FindFirst(1) = SysOk then        
         --CalcNetWeight;
-        SetupStartTimer(13, 100, TimerOneShot);
-        --DisplayTruck;
-        --StoreTransaction;     
+        --SetupStartTimer(12, 100, TimerOneShot);   
 
-      else 
-          DisplayStatus("Error: Invalid ID");
-          EntryMode :=  SelectInboundDB;    
-        end if;
+      --else 
+          --DisplayStatus("Error: Invalid ID");
+          --EntryMode :=  SelectInboundDB;    
+        --end if;
       end if;
 
   end;
@@ -2112,17 +2107,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   end;
 
 
-  handler Timer13Trip;
-  begin
-
-    CalcNetWeight;
-    DisplayTruck;              
-    SetBargraphLevel(bar182, 100);
-    SetBargraphLevel(bar183, 100);
-    SelectScreen(g_ciNetWeight); 
-
-  end;
-
 ----------------------------------------------------
 ----------------WEIGHOUT SELECTION------------------
 ----------------------------------------------------
@@ -2137,12 +2121,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           SetupStartTimer(12, 100, TimerOneShot);
         else 
           DisplayStatus("Error: Invalid ID");
-          EntryMode :=  SelectInboundDB;    
+          EntryMode :=  SelectInboundDB;
+          g_iSelect := 0;    
         end if;
       end if;
     else
       Displaystatus("Select One to Weight Out");
-      EntryMode :=  SelectInboundDB;    
+      EntryMode :=  SelectInboundDB;
+      g_iSelect := 0;    
     end if;
 
   end;
