@@ -1024,7 +1024,7 @@ program TruckInOut;
       displayTruckid := InboundDB.Id; 
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
-      SetLabelText(idtare, RealToString(TransDB.Gross, 6, g_iDecimal));
+      SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal));
   end;
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
@@ -1215,7 +1215,7 @@ program TruckInOut;
     --weigh out
     elsif EntryMode = EnterTruckID_WeighOut then 
       
-      if IsValid(sTemp, "S", 15) and len(stemp) > 0 then
+      if IsValid(sTemp, "S", 15) then
     
         InboundDB.ID := sTemp;
         g_sysResult1 := InboundDB.FindFirst(Inbound_Id);   
