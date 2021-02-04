@@ -5,9 +5,9 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.9-----------------------------------
+--------------------------------ASCV1.2.8.1-----------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
---FIX little bugs
+--FIX bug occuring on line 
 
 program TruckInOut; 
  
@@ -17,7 +17,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2.9"; --Version of our program
+  as_Version            : constant string  := "1.2.8.1"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -1492,12 +1492,11 @@ program TruckInOut;
   begin
     
     CalcNetWeight;
-    DisplayTruck;           
-    --SetWidgetColor(bar182, "#8D0018");
-    --SetWidgetColor(bar183, "#8D0018");    
+    DisplayTruck;              
     SetBargraphLevel(bar182, 100);
     SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
+    g_iSelect := 0;
 
   end;
 
@@ -1746,6 +1745,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
 
     ReportDB.Sort(Report_TruckId);
+
     if ReportDB.GetFirst = SysOk then
       sId := ReportDB.TruckId;
       rTotalWgt := ReportDB.Net;
@@ -1781,9 +1781,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetLabelText(lblTruck, Blank);
       sTemp := Blank;
       g_sysResult1 := SysNoSuchRecord;
-<<<<<<< Updated upstream
-      --g_sysResult_1 := SysNoSuchRecord;
-=======
       g_sysResult_1 := SysNoSuchRecord;
   end;
 
@@ -2114,17 +2111,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   end;
 
 
-  handler Timer13Trip;
-  begin
-
-    CalcNetWeight;
-    DisplayTruck;              
-    SetBargraphLevel(bar182, 100);
-    SetBargraphLevel(bar183, 100);
-    SelectScreen(g_ciNetWeight); 
-
-  end;
-
 ----------------------------------------------------
 ----------------WEIGHOUT SELECTION------------------
 ----------------------------------------------------
@@ -2139,12 +2125,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           SetupStartTimer(12, 100, TimerOneShot);
         else 
           DisplayStatus("Error: Invalid ID");
-          EntryMode :=  SelectInboundDB;    
+          EntryMode :=  SelectInboundDB;
+          g_iSelect := 0;    
         end if;
       end if;
     else
       Displaystatus("Select One to Weight Out");
-      EntryMode :=  SelectInboundDB;    
+      EntryMode :=  SelectInboundDB;
+      g_iSelect := 0;    
     end if;
 
   end;
@@ -2206,6 +2194,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
     g_iSelect := g_iWidget;
     EntryMode := SelectTruckID_WeighOut;
+    WO_Selection;
 
   end;  
 
@@ -2388,8 +2377,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
       SelectInboundtoWeighOut;
-      WO_Selection;
-      g_iSelect := 0;
+      --WO_Selection;
+      --g_iSelect := 0;
 
     elsif g_iWidget = btnDl then
       DeleteInbound;
