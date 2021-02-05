@@ -1048,11 +1048,11 @@ program TruckInOut;
     elsif Entrymode = SetupEnterTPasswordMode then
       EntryMode := LastEntryMode; 
     else   
-      --DisplayStatus(Blank); 
-      --SetLabelText(lbSts1, Blank);  
-      --EntryMode := NoMode;  
-      SetLabelText(lbSts1, Blank); 
-      EntryMode := WeighMode;
+      DisplayStatus(Blank); 
+      SetLabelText(lbSts1, Blank);  
+      EntryMode := NoMode;  
+      --SetLabelText(lbSts1, Blank); 
+      --EntryMode := WeighMode;
     end if;
     
   end;    
