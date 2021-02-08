@@ -679,8 +679,13 @@ program TruckInOut;
     if sValidFor = "S" then
     
       if Len(sTemp) = 0 or (Len(sTemp) > iLength and iLength <> 0) or Left$(sTemp,1) = " " then  
-        bResult := False;
-        sMessage := "Required Entry - Try Again";  
+        if EntryMode = EnterTruckID_WeighOut or EntryMode = SelectInboundDB then
+          bResult := False;
+          sMessage := "Invalid Truck ID - Try again";
+        else
+          bResult := False;
+          sMessage := "Required Entry - Try Again";  
+        end if;
       end if;      
         
     elsif sValidFor = "I" then
@@ -1231,7 +1236,7 @@ program TruckInOut;
             --else
           EntryMode := CapturingOutboundWeight;   
           WaitSS(g_iTotalScale);
-          SetupStartTimer(12, 100, TimerOneShot);
+          --SetupStartTimer(12, 50, TimerOneShot);
             --end if;
           --end if;        
         else
@@ -1256,7 +1261,7 @@ program TruckInOut;
         end if;             
       else     
         SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
-        ReadytoProcessTruck(100); 
+        ReadytoProcessTruck(100);
       end if; 
 
     -----------------------------------------------
