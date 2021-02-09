@@ -4,7 +4,7 @@
   <IndicatorModel value="1280" />
   <IndicatorVersion value="1.07+" />
   <ChildAssembly value="rev1280.v305.dll" />
-  <ConfigHash value="168 104 182 144 59 92 18 16 103 76 161 63 121 210 218 37 227 244 206 240 " />
+  <ConfigHash value="135 99 77 227 236 147 115 117 185 153 37 111 58 94 226 26 84 76 7 171 " />
   <CODFile value="C:\AACode\1280_TruckInOut_PN181077\source\TruckInOut.cod" />
   <Config>SC.ALIAS#1=Scale130
 SC.CAPACITY#1=120000
@@ -13432,7 +13432,7 @@ NFMT.PORT2=PORT1
 AUXFMT#1=&lt;SP47&gt;TRUCK ID  &lt;US1&gt;&lt;NL2&gt;&lt;SP51&gt;GROSS &lt;US2&gt; INBOUND&lt;NL2&gt;&lt;SP49&gt;&lt;US3&gt; &lt;US4&gt;&lt;NL&gt;
 AUXFMT.PORT#1=PORT1
 AUXFMT.PORT2#1=NONE
-AUXFMT#2=&lt;SP53&gt;TICKET &lt;US17&gt;&lt;NL2&gt;&lt;SP51&gt;TRUCK ID &lt;US1&gt;&lt;NL&gt;&lt;SP60&gt;&lt;US10&gt; &lt;US11&gt;&lt;NL&gt;&lt;SP60&gt;&lt;US13&gt; &lt;US14&gt;&lt;NL2&gt;&lt;SP54&gt;GROSS &lt;US2&gt; &lt;US3&gt;&lt;NL&gt;&lt;SP55&gt;TARE &lt;US4&gt; &lt;US5&gt;&lt;NL&gt;&lt;SP56&gt;NET &lt;US6&gt;&lt;NL&gt;&lt;SP60&gt;&lt;US15&gt; &lt;US16&gt;&lt;NL2&gt;&lt;SP60&gt;&lt;US7&gt; &lt;US8&gt;&lt;NL&gt;
+AUXFMT#2=&lt;SP58&gt;TICKET &lt;US17&gt;&lt;NL2&gt;&lt;SP56&gt;TRUCK ID &lt;US1&gt;&lt;NL&gt;&lt;SP60&gt;&lt;US10&gt; &lt;US11&gt;&lt;NL&gt;&lt;SP60&gt;&lt;US13&gt; &lt;US14&gt;&lt;NL2&gt;&lt;SP54&gt;GROSS &lt;US2&gt; &lt;US3&gt;&lt;NL&gt;&lt;SP55&gt;TARE &lt;US4&gt; &lt;US5&gt;&lt;NL&gt;&lt;SP56&gt;NET &lt;US6&gt;&lt;NL&gt;&lt;SP60&gt;&lt;US15&gt; &lt;US16&gt;&lt;NL2&gt;&lt;SP60&gt;&lt;US7&gt; &lt;US8&gt;&lt;NL&gt;
 AUXFMT.PORT#2=PORT1
 AUXFMT.PORT2#2=NONE
 AUXFMT#3=&lt;NL3&gt;&lt;SP58&gt;AXLE 1 &lt;G#1&gt;&lt;NL&gt;&lt;SP58&gt;AXLE 2 &lt;G#2&gt;&lt;NL&gt;&lt;SP58&gt;AXLE 3 &lt;G#3&gt;&lt;NL2&gt;&lt;SP53&gt;GROSS TOTAL &lt;G#4&gt;&lt;NL&gt;
