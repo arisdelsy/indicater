@@ -5,9 +5,8 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
---------------------------------ASCV1.2.8.1-----------------------------------
+---------------------------------ASCV1.2.9------------------------------------
 ---------------------------------KNOWN BUGS-----------------------------------
---FIX bug occuring on line 
 
 program TruckInOut; 
  
@@ -1029,6 +1028,7 @@ program TruckInOut;
       displayTruckid := InboundDB.Id; 
       SetLabelText(lbl138, displayTruckid);
       SetLabelText(lblTruck, displayTruckid);
+
       SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal));
   end;
 
@@ -1629,7 +1629,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     SetPrintText(6, RealToString(TransDB.Net, 6, g_iDecimal) + " " + GetCurrentUnitsString(1));
     SetPrintText(7, Time$(TransDB.OutDT ));
     SetPrintText(8, Date$(TransDB.OutDT ));
-    
+
     if g_sProductId = Blank then
       SetPrintText(9, Blank);
       SetPrintText(10, Blank);
@@ -2011,21 +2011,21 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           if rGrossWgt > g_rInboundWgt then  
             TransDB.Gross := rGrossWgt;             
             TransDB.Tare := g_rInboundWgt;
-            SetPrintText(5, "RECALLED");
-            SetPrintText(3, Blank); 
+            SetPrintText(5, "INBOUND");
+            SetPrintText(3, "OUTBOUND"); 
           else
             TransDB.Tare := rGrossWgt;
             TransDB.Gross := g_rInboundWgt;   
-            SetPrintText(3, "RECALLED");
-            SetPrintText(5, Blank);                                               
+            SetPrintText(3, "INBOUND");
+            SetPrintText(5, "OUTBOUND");                                               
           end if;  
 
         else 
 
           TransDB.Gross := rGrossWgt;
           TransDB.Tare := g_rInboundWgt;         
-          SetPrintText(5, "RECALLED");
-          SetPrintText(3, Blank);   
+          SetPrintText(5, "INBOUND");
+          SetPrintText(3, "OUTBOUND");   
                   
         end if; 
 
