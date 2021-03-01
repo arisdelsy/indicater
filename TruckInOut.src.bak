@@ -726,6 +726,9 @@ program TruckInOut;
     if bResult = False then
       if sValidFor = "P" or sValidFor = "R" or sValidFor = "I" then
         PromptForEntry(sMessage, EntryMode, Blank,2);
+      elsif sValidFor = "S" and EntryMode = SelectTruckID_WeighOut then
+        EntryMode := SelectInboundDB;
+        --SelectScreen(g_ciWSelect);
       else
         PromptForEntry(sMessage, EntryMode, Blank,1); 
       end if;
@@ -2271,9 +2274,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnID then
       SetLabelText(lbSts1, Blank);
-      WO_Input;
-      --PromptForEntry("Enter Truck ID", SelectTruckID_WeighOut, Blank,1); 
-      --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
+      --WO_Input;
+      PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1);
+
 
 
     elsif g_iWidget = lbSet7 then 
