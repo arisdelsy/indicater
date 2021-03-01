@@ -315,7 +315,6 @@ program TruckInOut;
   function GetSelection_1 : integer;  -- Returns the current selected record in the display list    
     i : integer;    
   begin
-
       if g_iSelect = 142 or g_iSelect = 143 or g_iSelect = 144 then   
         g_iWidgetNum := 1;
       elsif g_iSelect = 145 or g_iSelect = 146 or g_iSelect = 147 then
@@ -330,7 +329,8 @@ program TruckInOut;
 
       i := (g_iPage - 1) * g_ciMaxPerSelectScreen + g_iWidgetNum;  
     
-    return i;  
+    return i;
+
       
   end; 
 
@@ -678,9 +678,11 @@ program TruckInOut;
     if sValidFor = "S" then
     
       if Len(sTemp) = 0 or (Len(sTemp) > iLength and iLength <> 0) or Left$(sTemp,1) = " " then  
-        if EntryMode = EnterTruckID_WeighOut or EntryMode = SelectInboundDB then
+        if EntryMode = EnterTruckID_WeighOut then
           bResult := False;
           sMessage := "Invalid Truck ID - Try again";
+        elsif EntryMode = SelectTruckID_WeighOut then
+          bResult := False;
         else
           bResult := False;
           sMessage := "Required Entry - Try Again";  
@@ -2116,18 +2118,22 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 ----------------WEIGHOUT SELECTION------------------
 ----------------------------------------------------
   procedure WO_Selection;
+
   begin
 
     if g_iSelect <> 0 then
       if EntryMode = SelectTruckID_WeighOut then
         ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
-        if InboundDB.FindFirst(1) = SysOk then        
+        if g_arDisplay[GetSelection_1].sID <> Blank then
+        --if InboundDB.FindFirst(1) = SysOk then        
           --StoreTransaction;
           SetupStartTimer(12, 100, TimerOneShot);
+          
+
         else 
           DisplayStatus("Error: Invalid ID");
           EntryMode :=  SelectInboundDB;
-          g_iSelect := 0;    
+          g_iSelect := 0;
         end if;
       end if;
     else
