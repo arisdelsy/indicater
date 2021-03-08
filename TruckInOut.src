@@ -2125,16 +2125,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;
 
-----------------------------------------------------
------------------WEIGHIN SELECTION------------------
-----------------------------------------------------
-  procedure WI_Selection;
-
-  begin
-  
-
-  end;
-
 
   procedure WI_Screencheck;
   begin
@@ -2142,6 +2132,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     SelectScreen(g_ciWISelect); 
   else
     PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
+
+  end;
+
+----------------------------------------------------
+-----------------WEIGHIN SELECTION------------------
+----------------------------------------------------
+  procedure WI_Selection;
+
+  begin
+  
 
   end;
 
