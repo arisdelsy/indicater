@@ -37,6 +37,7 @@ program TruckInOut;
   g_ciReport  : constant integer := 10;
   g_ciNetWeight : constant integer := 4;	-- assigning screen variable to call
   g_ciWSelect : constant integer := 6;
+  g_ciWISelect : constant integer := 7;
   g_ciLoad    : constant integer := 9;
 
   -- Outputs
@@ -62,6 +63,7 @@ program TruckInOut;
   YNClearOneInbound       : constant integer := 123;
   --Selection Mode
   SelectTruckID_WeighOut  : constant integer := 124;
+  SelectTruckID_Update    : constant integer := 125;
 
   -- Setup Modes
   SetupEnterSPasswordMode  : constant integer := 999;
@@ -324,6 +326,31 @@ program TruckInOut;
       elsif g_iSelect = 151 or g_iSelect = 152 or g_iSelect = 153 then
         g_iWidgetNum := 4;
       elsif g_iSelect = 154 or g_iSelect = 155 or g_iSelect = 156 then
+        g_iWidgetNum := 5;
+      end if;
+
+      i := (g_iPage - 1) * g_ciMaxPerSelectScreen + g_iWidgetNum;  
+    
+    return i;
+
+      
+  end; 
+
+-------------------------------------------------------------------
+---------------New function for selection of weighout--------------
+-------------------------------------------------------------------
+  function GetSelection_2 : integer;  -- Returns the current selected record in the display list    
+    i : integer;    
+  begin
+      if g_iSelect = 191 or g_iSelect = 192 or g_iSelect = 193 then   
+        g_iWidgetNum := 1;
+      elsif g_iSelect = 194 or g_iSelect = 195 or g_iSelect = 196 then
+        g_iWidgetnum := 2;
+      elsif g_iSelect = 197 or g_iSelect = 198 or g_iSelect = 199 then
+        g_iWidgetNum := 3;
+      elsif g_iSelect = 200 or g_iSelect = 201 or g_iSelect = 202 then
+        g_iWidgetNum := 4;
+      elsif g_iSelect = 203 or g_iSelect = 204 or g_iSelect = 205 then
         g_iWidgetNum := 5;
       end if;
 
@@ -1496,7 +1523,8 @@ program TruckInOut;
   end; 
 
 
-  handler Timer12Trip;
+
+  handler Timer12Trip; --Weigh out Timer
   begin
     
     CalcNetWeight;
@@ -2097,6 +2125,25 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;
 
+----------------------------------------------------
+-----------------WEIGHIN SELECTION------------------
+----------------------------------------------------
+  procedure WI_Selection;
+
+  begin
+  
+
+  end;
+
+
+  procedure WI_Screencheck;
+  begin
+  if InboundDB.FindFirst(1) = SysOk then
+    SelectScreen(g_ciWISelect); 
+  else
+    PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
+
+  end;
 
 ----------------------------------------------------
 ----------------WEIGHOUT SELECTION------------------
@@ -2108,12 +2155,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     if g_iSelect <> 0 then
       if EntryMode = SelectTruckID_WeighOut then
         ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
-        if g_arDisplay[GetSelection_1].sID <> Blank then
-        --if InboundDB.FindFirst(1) = SysOk then        
+        if g_arDisplay[GetSelection_1].sID <> Blank then   
           --StoreTransaction;
           SetupStartTimer(12, 100, TimerOneShot);
           
-
         else 
           DisplayStatus("Error: Invalid ID");
           EntryMode :=  SelectInboundDB;
@@ -2189,6 +2234,38 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;  
 
+  procedure SelectInboundtoUpdate; -------- NEW PROCEDURE (WeighIn)
+    iTouch : integer;
+    i : integer;
+  begin
+
+    iTouch := g_iWidget mod 3;
+    for i := minLab3 to maxLab3 
+    loop
+      SetwidgetColor(i, "Black");
+    end loop;
+
+    if iTouch = 1 then
+      Setwidgetcolor(g_iWidget, "#BB0000");
+      SetwidgetColor(g_iWidget + 1, "#BB0000");
+      SetwidgetColor(g_iWidget + 2, "#BB0000");
+      
+    elsif iTouch = 2 then
+      Setwidgetcolor(g_iWidget, "#BB0000");
+      SetwidgetColor(g_iWidget + 1, "#BB0000");
+      SetwidgetColor(g_iWidget - 1, "#BB0000");
+      
+    elsif iTouch = 0 then
+      Setwidgetcolor(g_iWidget, "#BB0000");
+      SetwidgetColor(g_iWidget - 1, "#BB0000");
+      SetwidgetColor(g_iWidget - 2, "#BB0000");
+    end if;
+    g_iSelect := g_iWidget;
+    EntryMode := SelectTruckID_Update;
+    WI_Selection;
+
+  end;  
+
   handler WidgetClicked;
     iDigInSts : integer;
     i : integer;
@@ -2243,9 +2320,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       RefreshSetupDisplay;
 
     elsif g_iWidget = btnWIn and EntryMode = WeighMode then
-      PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
-			SetLabelText(lbSts1, Blank);
-      
+      --PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
+			--SetLabelText(lbSts1, Blank);
+      WI_Screencheck;
+
     elsif g_iWidget = btnWOut and EntryMode = WeighMode then
       --SetLabelText(lbSts1, Blank);
       --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
