@@ -4,11 +4,7 @@
 -- The 1280 Truck In/Out application is included with the 1280 standard firmware 
 -- and is loaded by importing the application from the Configuration menu
 -- “Import Files”.  
--- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
-----------------------------------ASCV1.2.9-----------------------------------
----------------------------------KNOWN BUGS-----------------------------------
---FIX little bugs
 
 program TruckInOut; 
  
@@ -134,6 +130,7 @@ lbl4      : constant integer := 4;
 lbl5      : constant integer := 5;
 lbl6      : constant integer := 6;
 btnSetup  : constant integer := 7;
+btnGo     : constant integer := 8;
 lbor      : constant integer := 9;
 lbsts1    : constant integer := 10;
 MinLabel  : constant integer := 11;
@@ -161,7 +158,7 @@ lbl32     : constant integer := 32;
 lbl33     : constant integer := 33;
 Maxlabel  : constant integer := 34;
 btnRegs   : constant integer := 35;
-lbl36     : constant integer := 36;
+btnStop   : constant integer := 36;
 btnExt8   : constant integer := 37;
 btnDl     : constant integer := 38;
 btnPgUp2  : constant integer := 39;
@@ -253,52 +250,8 @@ barSet14  : constant integer := 160;
 lbSet14   : constant integer := 168;
 barSet15  : constant integer := 125;
 lbSet15   : constant integer := 126;
-lblTruck  : constant integer := 133;
-lbl135    : constant integer := 135;
-lbl136    : constant integer := 136;
-lbl137    : constant integer := 137;
-lbl138    : constant integer := 138;
-lbl140    : constant integer := 140;
-lbl141    : constant integer := 141;
-minLab2   : constant integer := 142;
-lbl143    : constant integer := 143;
-lbl144    : constant integer := 144;
-lbl145    : constant integer := 145;
-lbl146    : constant integer := 146;
-lbl147    : constant integer := 147;
-lbl148    : constant integer := 148;
-lbl149    : constant integer := 149;
-lbl150    : constant integer := 150;
-lbl151    : constant integer := 151;
-lbl152    : constant integer := 152;
-lbl153    : constant integer := 153;
-lbl154    : constant integer := 154;
-lbl155    : constant integer := 155;
-maxLab2   : constant integer := 156;
-lbl157    : constant integer := 157;
-lbl160    : constant integer := 160;
-btnID     : constant integer := 161;
-btnAxle   : constant integer := 162;
-btnNPr    : constant integer := 163;
-lbLoad    : constant integer := 164;
-lbl165    : constant integer := 165;
-lbl166    : constant integer := 166;
-idtare    : constant integer := 167;
-btnPgUp4  : constant integer := 169;
-lbl170    : constant integer := 170;
-btnExt4   : constant integer := 171;
-lbl174    : constant integer := 174;
-btnPgDn4  : constant integer := 177;
-lbl179    : constant integer := 179;
-lbl180    : constant integer := 180;
-bar182    : constant integer := 182;
-bar183    : constant integer := 183;
-btnprt2   : constant integer := 184;
-btnbck    : constant integer := 185;
-lbl186    : constant integer := 186;
-lbl187    : constant integer := 187;
-
-
+btnNet    : constant integer := 127;
+btnPrint  : constant integer := 128;
 USBPRN    : constant string := "USBPRN";
 ADVPRN    : constant string := "ADVPRN";
  
@@ -306,10 +259,7 @@ ADVPRN    : constant string := "ADVPRN";
 
   -- Constants and aliases definitions 
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
-  g_csVersion           : constant string  := "1.06"; --Program Version  
-  
-  as_Version            : constant string  := "1.2.9"; --Version of our program
-
+  g_csVersion           : constant string  := "1.06"; --Program Version   
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
   g_ciDigInOn           : constant integer := 0; --Digital Input is On 
@@ -327,10 +277,7 @@ ADVPRN    : constant string := "ADVPRN";
   g_ciYesNo   : constant integer := 5;
   g_ciCPList  : constant integer := 3;
   g_ciReport  : constant integer := 10;
-  g_ciNetWeight : constant integer := 4;	-- assigning screen variable to call
-  g_ciWSelect : constant integer := 6;
-  g_ciLoad    : constant integer := 9;
-
+  
   -- Outputs
   g_ciGreenLight   : constant integer := 1;
   g_ciRedLight     : constant integer := 2;
@@ -352,8 +299,6 @@ ADVPRN    : constant string := "ADVPRN";
   SelectInboundDB         : constant integer := 121;  
   YNClearALLInbounds      : constant integer := 122;
   YNClearOneInbound       : constant integer := 123;
-  --Selection Mode
-  SelectTruckID_WeighOut  : constant integer := 124;
 
   -- Setup Modes
   SetupEnterSPasswordMode  : constant integer := 999;
@@ -381,20 +326,12 @@ ADVPRN    : constant string := "ADVPRN";
   EntryMode : integer;      
   LastEntryMode : integer;
 
-  -- NEW Selection Screen Modes
-  SelectTruck : constant integer := 3000;
-  LoadTruck   : constant integer := 4000;
-    CancelTruck   : constant integer := 4001;  
-
-  g_ciMaxPerSelectScreen    : constant integer := 5;
   g_ciMaxPerScreen          : constant integer := 8; 
-  g_ciMaxRecords            : constant integer := 1000;
+  g_ciMaxRecords            : constant integer := 1000;  
 
   Blank : constant string := "";      
 
   -- Global/Types variables definitions 
-  bar_level : integer;
-  iCount    : integer;
   g_sSetupPassword : stored string;   
   g_sTruckPassword : stored string;
   g_iDownload : stored integer;
@@ -404,10 +341,6 @@ ADVPRN    : constant string := "ADVPRN";
   g_uUnits : Units; 
   g_iWaitSSScale : integer;  
   g_sysResult1 : SysCode;
-  
-  --Selection system result
-  g_sysResult_1 : SysCode;
-
 	g_sysResult2 : SysCode;
   g_iDebug : integer;
   g_iStoredTares : stored integer;
@@ -430,17 +363,8 @@ ADVPRN    : constant string := "ADVPRN";
   g_iNbrofCustomers : integer;
   g_iNbrofProducts : integer;
   g_iDelete : integer;
-  --New Variable similar to g_iDelete for selection
-  g_iSelect : integer;
   g_Decimal : integer;
   g_rInboundWgt : real;
---new var to calculate the net weight of a live weigh out 
-  g_currentNet  : real;
-  --variable holding current truck id
-  displayTruckid  : string;
-
--- Variable storing temp string entry
-  sTemp : string;
 
   type boolean is (False,True); 
   g_bUpdate : boolean;
@@ -454,7 +378,7 @@ ADVPRN    : constant string := "ADVPRN";
     end record;     
 
  type DisplayArrays is array [g_ciMaxRecords] of DisplayRecord;
-  g_arDisplay : DisplayArrays;
+  g_arDisplay : DisplayArrays; 
 
   InboundDB : Inbounddatabase; 
   ProductDB : ProductDatabase;
@@ -469,7 +393,7 @@ ADVPRN    : constant string := "ADVPRN";
     SetTimerMode(iTimer, itmMode);
     StartTimer(iTimer);
     
-  end;
+  end;    
 
   procedure WaitSS(iScale : integer);
   begin
@@ -496,7 +420,58 @@ ADVPRN    : constant string := "ADVPRN";
     return 0;   
     
   end;
-      
+
+  procedure TurnOnGreenLight;  
+  begin 
+
+    if g_iTrafficLights = 1 then
+      Print(Auxfmt20);
+      SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOff);
+      SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOn); 
+      g_sLightStatus := "GREEN";
+      SetImageWidgetPath(btnStop, "local://24.png");
+      SetImageWidgetPath(btnGo, "local://23.png");
+    end if;
+
+  end;
+
+  procedure TurnOnGreenLightManually;  
+  begin 
+
+      Print(Auxfmt20);
+      SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOff);
+      SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOn); 
+      g_sLightStatus := "GREEN";
+      SetImageWidgetPath(btnStop, "local://24.png");
+      SetImageWidgetPath(btnGo, "local://23.png");
+  
+  end;
+
+ procedure TurnOnRedLight; 
+ begin
+
+    if g_iTrafficLights = 1 then
+      Print(Auxfmt19);        
+      SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOff);
+      SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOn);   
+      g_sLightStatus := "RED";   
+      SetImageWidgetPath(btnstop, "local://25.png");
+      SetImageWidgetPath(btnGo, "local://22.png");
+    end if;
+		
+ end;  
+
+ procedure TurnOnRedLightManually; 
+ begin
+
+    Print(Auxfmt19);        
+    SetDigout(g_ciDigSlot, g_ciGreenLight, g_ciDigOutOff);
+    SetDigout(g_ciDigSlot, g_ciRedLight, g_ciDigOutOn);   
+    g_sLightStatus := "RED";   
+    SetImageWidgetPath(btnstop, "local://25.png");
+    SetImageWidgetPath(btnGo, "local://22.png");
+
+ end;       
 
  procedure TurnOffWeighInOutButtons;
  begin
@@ -601,31 +576,6 @@ ADVPRN    : constant string := "ADVPRN";
       
   end;    
 
--------------------------------------------------------------------
----------------New function for selection of weighout--------------
--------------------------------------------------------------------
-  function GetSelection_1 : integer;  -- Returns the current selected record in the display list    
-    i : integer;    
-  begin
-
-      if g_iSelect = 142 or g_iSelect = 143 or g_iSelect = 144 then   
-        g_iWidgetNum := 1;
-      elsif g_iSelect = 145 or g_iSelect = 146 or g_iSelect = 147 then
-        g_iWidgetnum := 2;
-      elsif g_iSelect = 148 or g_iSelect = 149 or g_iSelect = 150 then
-        g_iWidgetNum := 3;
-      elsif g_iSelect = 151 or g_iSelect = 152 or g_iSelect = 153 then
-        g_iWidgetNum := 4;
-      elsif g_iSelect = 154 or g_iSelect = 155 or g_iSelect = 156 then
-        g_iWidgetNum := 5;
-      end if;
-
-      i := (g_iPage - 1) * g_ciMaxPerSelectScreen + g_iWidgetNum;  
-    
-    return i;  
-      
-  end; 
-
   procedure ClearDisplayListArray;  -- Clear Display List Array
     i : integer;
   begin 
@@ -659,28 +609,7 @@ ADVPRN    : constant string := "ADVPRN";
       SetLabelText(i, Chr$(08));
     end loop;
 
-  end;
-
-
-  -------------------------------------------------
-  ----NEW Clear Procedure for Selection Screen-----
-  -------------------------------------------------
-  procedure ClearWidgetsData_1;  -- Clear Display  List Screen text boxes
-    i : integer;
-  begin  
-   
-    for i := minLab2 to maxLab2
-    loop
-      SetLabelText(i, Chr$(08));
-    end loop;
-
-
-    for i := minId to maxName
-    loop
-      SetLabelText(i, Chr$(08));
-    end loop;
-
-  end;  
+  end; 
 
   procedure DisplayInboundDB; 
     i : integer;
@@ -736,64 +665,6 @@ ADVPRN    : constant string := "ADVPRN";
 
   end;   
 
-  ------------------------------------------------------
-  ---------NEW Display Selection Screen Widgets---------
-  ------------------------------------------------------
-
-  procedure DisplayInboundDB_1; 
-    i : integer;
-    j : integer;
-  begin 
-
-    -- Clear Text Boxes & Widgets
-    ClearWidgetsData_1;
-    
-    -- Clear Array
-    ClearDisplayListArray; 
-    
-    -- Sort DB or Get Based of Criteria                                       
-    InboundDB.Sort(1);                                    
-    i := 1; 
-    
-    -- FillArray
-    if InboundDB.GetFirst = SysOk then  
-
-      g_arDisplay[i].sID := InboundDB.ID;  
-      g_arDisplay[i].sName := RealToString(InboundDB.InPWgt,0,g_iDecimal);  
-			g_arDisplay[i].sInDT := Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);
-      i := 2;            
- 
-      while InboundDB.GetNext = SysOk  
-      loop         
-        if i <= g_ciMaxRecords then             
-          g_arDisplay[i].sID := InboundDB.ID;  
-      		g_arDisplay[i].sName := RealToString(InboundDB.InPWgt,0,g_iDecimal);  
-					g_arDisplay[i].sInDT :=Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);                                                      
-          i := i + 1;                          
-        end if;       
-      end loop; 
-      
-    end if; 
-    
-    -- Select Screen, Enable Handlers, Clear Screen and initialize variables
-    SelectScreen(g_ciWSelect);                                       
-    i := minLab2;  
-    SetSymbolState(g_iWidgetNum, 1);
-    g_iPage := 1;          
-    j := 1;   
-    
-    -- Populate Screen
-    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerSelectScreen   
-    loop    
-      SetLabelText(i, g_arDisplay[j].sID);
-      SetLabelText(i + 1, g_arDisplay[j].sName); 
-			SetLabelText(i + 2, g_arDisplay[j].sInDT); 
-      i := i + 3;
-      j := j + 1;   
-    end loop;                            
-
-  end;
-
   procedure PageUporDownTruckList(tmpPage : integer);  -- Page Up/Page Down the Display List 
     a : integer;
     i : integer;
@@ -841,58 +712,6 @@ ADVPRN    : constant string := "ADVPRN";
     end if;
 
   end; 
-
-  --------------------------------------------------------
-  ----------NEW Paging up/down selection screen-----------
-  --------------------------------------------------------
-
-  procedure PageUporDownTruckList_1(tmpPage : integer);  -- Page Up/Page Down the Display List 
-    a : integer;
-    i : integer;
-    j : integer;
-    b : integer;
-  begin 
-    
-    -- Clear display
-    for i := minLab2 to maxLab2
-    loop
-      SetLabelText(i, Blank);
-    end loop;
-    
-    -- Find out where we are in the array
-    if tmpPage = 1 then
-      i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
-    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerSelectScreen) then
-      i := (tmpPage * g_ciMaxPerSelectScreen) - 4;      
-    else
-      i := 1;
-      g_iPage := 1;              
-    end if;
-
-    b := minLab2;
-    j := i + 4; 
-    
-    -- Display the top of the list if we have reach the end 
-    if g_arDisplay[i].sID = Blank then -- and EntryMode <> SetupSelectTruck then
- 
-      DisplayInboundDB_1;  
-
-    else  
-      
-      -- Populate display with new data
-      for a := i to j
-      loop  
-        if a > 0 and a <= g_ciMaxRecords and g_arDisplay[a].sID <> Blank then
-          SetLabelText(b, g_arDisplay[a].sID);
-          SetLabelText(b + 1, g_arDisplay[a].sName);  
-					SetLabelText(b + 2, g_arDisplay[a].sInDT);
-          b := b + 3; 
-        end if; 
-      end loop;
-       
-    end if;
-
-  end;
 
   procedure PromptForEntry(sPrompt : string;  iMode : integer; sDefault : string; iPrompt : Integer);  -- Prompts operator for data
   begin
@@ -964,7 +783,6 @@ ADVPRN    : constant string := "ADVPRN";
     sMessage : string;
   begin 
     
-    --makes upper case
     sValidFor := UCase$(sValidFor);
     
     if sValidFor = "S" then
@@ -1299,30 +1117,13 @@ ADVPRN    : constant string := "ADVPRN";
     
   end; 
 
-  procedure CalcNetWeight;
-  rTotalWgt : real;
-  displayNet  : string;
-  begin
-      rTotalWgt := TransDB.Net;
-      TransDB.CustId := CustomerDB.Id;
-      g_currentNet := rTotalWgt - ReportDB.Net;
-      displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
-      SetLabelText(lbl136, displayNet);
-  end;
 
-  procedure DisplayTruck;  --Display Truck ID
-  begin
-      displayTruckid := InboundDB.Id; 
-      SetLabelText(lbl138, displayTruckid);
-      SetLabelText(lblTruck, displayTruckid);
-      SetLabelText(idtare, RealToString(TransDB.Gross, 6, g_iDecimal));
-  end;
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
   begin 
   
     SetupStartTimer(29, iTime, TimerOneShot);
-
+    
   end;    
 
   procedure ProcessPromptCancel;   -- Performs Cancel operation when cancelling a prompt
@@ -1338,15 +1139,10 @@ ADVPRN    : constant string := "ADVPRN";
       EntryMode := WeighMode;
     elsif Entrymode = SetupEnterTPasswordMode then
       EntryMode := LastEntryMode;
-    --elsif EntryMode = SelectInboundDB then 
-      --EntryMode := WeighMode;
-      --SelectScreen(g_ciMain);    
     else   
-      --DisplayStatus(Blank); 
-      --SetLabelText(lbSts1, Blank);  
-      --EntryMode := NoMode;  
-      SetLabelText(lbSts1, Blank); 
-      EntryMode := WeighMode;
+      DisplayStatus(Blank); 
+      SetLabelText(lbSts1, Blank);  
+      EntryMode := NoMode;  
     end if;
     
   end;    
@@ -1484,29 +1280,25 @@ ADVPRN    : constant string := "ADVPRN";
           WaitSS(1);
         end if;
       end if; 
-    --weigh in
+
     elsif EntryMode = EnterTruckID_WeighIn then 
       
       if IsValid(sTemp, "S", 15) then  
         InboundDB.ID := sTemp;
-
+        
         g_sysResult1 := InboundDB.FindFirst(Inbound_Id);         
         if g_sysResult1 <> SysOk then
           EntryMode := CapturingInboundWeight;   
-          WaitSS(1);
-          ---------NEW
-          DisplayTruck;          
+          WaitSS(1);          
         else     
           SetLabelText(lbSts1, "Truck Already Weighed In"); 
           ReadytoProcessTruck(100); 
         end if;             
       else     
-        SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
+        SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
-      end if;  
-    -------------------------NEW CHAGNES---------------------------- 
-    --Under the entry mode changes I entered it to select screen
-    --weigh out
+      end if;   
+
     elsif EntryMode = EnterTruckID_WeighOut then 
       
       if IsValid(sTemp, "S", 15) then
@@ -1517,90 +1309,41 @@ ADVPRN    : constant string := "ADVPRN";
         if g_sysResult1 = SysOk then
           g_bTareOption := False;
           GetInboundWgtBasedUnits;
-          --if g_iNbrofProducts >= 2 then
-            --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
-          --else
-            --if g_iNbrofCustomers >= 2 then
-              --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
-            --else
-          EntryMode := CapturingOutboundWeight;   
-          WaitSS(g_iTotalScale);
-            --end if;
-          --end if;        
-        else
-          -- Check Keyed Tare Option
-          GetTare(g_iTotalScale, g_uUnits, rTareWgt); 
-          g_bTareOption := True;
-          if g_rInboundWgt = 0 then           
-            SetLabelText(lbSts1, "Truck Not Weighed In");
-            ReadytoProcessTruck(100); 
+          if g_iNbrofProducts >= 2 then
+            PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
           else
-            --if g_iNbrofProducts >= 2 then
-              --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
-            --else
-              --if g_iNbrofCustomers >= 2 then
-                --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
-              --else
-                EntryMode := CapturingKeyTareWeight;   
-                WaitSS(1);     
-              --end if; 
-            --end if;        
-          end if;
-        end if;             
-      else     
-        SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
-        ReadytoProcessTruck(100); 
-      end if; 
-
-    -----------------------------------------------
-    -----------NEW Selection Mode Process----------
-    -----------------------------------------------
-    elsif EntryMode = SelectTruckID_WeighOut then 
-      
-      if IsValid(sTemp, "S", 15) then
-    
-        InboundDB.ID := sTemp;
-        g_sysResult_1 := InboundDB.FindFirst(Inbound_Id);   
-        g_Decimal := Locate(sTemp, ".");
-        if g_sysResult_1 = SysOk then
-          g_bTareOption := False;
-          GetInboundWgtBasedUnits;
-          --if g_iNbrofProducts >= 2 then
-            --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
-          --else
-            --if g_iNbrofCustomers >= 2 then
-              --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
-            --else
-              EntryMode := CapturingOutboundWeight;
+            if g_iNbrofCustomers >= 2 then
+              PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
+            else
+              EntryMode := CapturingOutboundWeight;   
               WaitSS(g_iTotalScale); 
-            --end if;
-          --end if;        
+            end if;
+          end if;        
         else
           -- Check Keyed Tare Option
           GetTare(g_iTotalScale, g_uUnits, rTareWgt); 
           g_bTareOption := True;
-          if g_rInboundWgt = 0 then
-          --if rTareWgt = 0.0 then           
+          if rTareWgt = 0.0 then           
             SetLabelText(lbSts1, "Truck Not Weighed In");
             ReadytoProcessTruck(100); 
           else
-            --if g_iNbrofProducts >= 2 then
-              --PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
-            --else
-              --if g_iNbrofCustomers >= 2 then
-                --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
-              --else
+            if g_iNbrofProducts >= 2 then
+              PromptForEntry("Enter Product ID", EnterProductID, Blank,1);
+            else
+              if g_iNbrofCustomers >= 2 then
+                PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
+              else
                 EntryMode := CapturingKeyTareWeight;   
                 WaitSS(1);      
-              --end if; 
-            --end if;        
+              end if; 
+            end if;        
           end if;
         end if;             
       else     
         SetLabelText(lbSts1, "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
       end if; 
-
+      
     elsif EntryMode = YNClearALLInbounds then
 
       SelectScreen(g_ciDList);
@@ -1783,12 +1526,11 @@ ADVPRN    : constant string := "ADVPRN";
   begin
     
     CalcNetWeight;
-    DisplayTruck;           
-    --SetWidgetColor(bar182, "#8D0018");
-    --SetWidgetColor(bar183, "#8D0018");    
+    DisplayTruck;              
     SetBargraphLevel(bar182, 100);
     SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
+    g_iSelect := 0;
 
   end;
 
@@ -1798,16 +1540,14 @@ ADVPRN    : constant string := "ADVPRN";
      if EntryMode = SelectInboundDB then
       --EntryMode := EnterTruckID_WeighOut;
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1);
-      if InboundDB.FindFirst(1) = SysOk then        
+      --if InboundDB.FindFirst(1) = SysOk then        
         --CalcNetWeight;
-        SetupStartTimer(13, 100, TimerOneShot);
-        --DisplayTruck;
-        --StoreTransaction;     
+        --SetupStartTimer(12, 100, TimerOneShot);   
 
-      else 
-          DisplayStatus("Error: Invalid ID");
-          EntryMode :=  SelectInboundDB;    
-        end if;
+      --else 
+          --DisplayStatus("Error: Invalid ID");
+          --EntryMode :=  SelectInboundDB;    
+        --end if;
       end if;
 
   end;
@@ -1822,7 +1562,7 @@ ADVPRN    : constant string := "ADVPRN";
     SetBargraphLevel(BarIn, 100);
     SetBargraphLevel(BarOut, 100);
   end;
---------- initialization of scales' units and count
+
   procedure HowmanyScales;
   begin
 
@@ -1847,9 +1587,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
  
     UnLockMajorKeys;
---Lock Keys for up and down for scales
-    LockKey(NavUpKey);
-    LockKey(NavDownKey);
     SetLabelText(lbSts1, Blank); 
     TurnOffWeighInOutButtons; 
     ScreenSetup;
@@ -1862,7 +1599,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     SelectScale(g_iTotalScale);
 
   end; 
---interupt truck ID entry
 
   procedure StoreTransaction;
   begin
@@ -1886,7 +1622,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
 
   end;   
-
 
   procedure PrintInboundTicket;  -- Print Weigh In Ticket
     rPrintGrossWgt : real;
@@ -2008,7 +1743,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end; 
 
----Print procedure
   procedure PrintTruck;
     rTotalWgt : real;
     sId : string;
@@ -2037,7 +1771,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
 
     ReportDB.Sort(Report_TruckId);
-    
     if ReportDB.GetFirst = SysOk then
       sId := ReportDB.TruckId;
       rTotalWgt := ReportDB.Net;
@@ -2064,21 +1797,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
 
   end;  
-
-------------------------------Added Blank for InboundDB.Id
-  procedure ClearTruck;
-  begin
-      displayTruckid := Blank;
-      SetLabelText(lbl138, Blank);
-      SetLabelText(lblTruck, Blank);
-      sTemp := Blank;
-      g_sysResult1 := SysNoSuchRecord;
-<<<<<<< Updated upstream
-      --g_sysResult_1 := SysNoSuchRecord;
-=======
-      g_sysResult_1 := SysNoSuchRecord;
-  end;
-
 
   procedure PrintCustomerByProduct;
     dtTemp : datetime := SystemTime;
@@ -2133,7 +1851,13 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if; 
 
   end;    
- 
+
+  handler Timer1Trip;
+  begin
+  
+    TurnOnGreenLight;
+  
+  end;   
 
   handler SP1Trip;
   begin
@@ -2142,6 +1866,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     EnableSP(2);
     DisplayStatus(Blank);
     SelectScreen(g_ciMain);	
+    TurnOnRedLight;
     SelectScale(g_iTotalScale);
     EntryMode := WeighMode;  
     SetWidgetVisibility(btnSetup, VOff);
@@ -2178,28 +1903,34 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     DisableSP(2);
     EnableSP(1);
     ClosePrompt;
+    TurnOnGreenLight;
     UnlockMajorKeys; 
     EntryMode := NoMode;  
     selectscreen(g_cimain); 
     SetWidgetVisibility(btnRegs, Von);
     SetWidgetVisibility(btnSetup, Von);
+    SetWidgetVisibility(btnStop, Von);
+    SetWidgetVisibility(btnGo, Von);
     SetLabelText(lbSts1, Blank);
     DisplayStatus(Blank); 
     StopTimer(25);   
-    TurnOffWeighInOutButtons;
-    ClearTruck;           
+    TurnOffWeighInOutButtons;           
     g_sProductID := Blank;
     g_sProductName := Blank;
     g_sProductConversionUnits := Blank;
     g_rProductMultiplier := 0;
     g_sCustomerID := Blank;
     g_sCustomerName := Blank;   
+	 -- SetWidgetVisibility(btnNet);
+ -- SetWidgetVisibility(btnPrint);
+  SetWidgetVisibility(btnNet, VOn);
+    SetWidgetVisibility(btnPrint, VOn);
   end;
                         
 		
 	
 
--------------------------------------------------------
+
   handler Timer25Trip;  -- Wait for Standstill check
     iMotion : integer;   
     rGrossWgt : real;
@@ -2259,13 +1990,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         g_sysResult1 := InboundDB.Add;
         
         if g_sysResult1 = SysOk then      
-          --PrintInboundTicket;  -- Print Inbound Ticket
+          PrintInboundTicket;  -- Print Inbound Ticket
           
           if g_iTruckExit = 1 then
             SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
-            TurnOffWeighInOutButtons;      
+            TurnOffWeighInOutButtons;            
             ClearTare(g_iTotalScale);
-            EntryMode := ExitScale;	
+            EntryMode := ExitScale;
+            TurnOnGreenLight;		
           else
             SetLabelText(lbSts1, "Weigh In Complete"); 
             EntryMode := WeighMode;
@@ -2284,20 +2016,14 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         SetPrintText(3, Blank);
         SetPrintText(5, "KEYED"); 
         StoreTransaction;           
-        PrintOutboundTicket;
-
-        
+        PrintOutboundTicket;  
       SetLabelText(lbSts1,"Net. Weight"); 
 			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
         TurnOffWeighInOutButtons;             
+        TurnOnGreenLight;
         ClearTare(g_iTotalScale);  
 				EntryMode := ExitScale;
-
-
-      -------------------------------------------
-      ----------------LOOK HERE------------------
-      -------------------------------------------
-        
+                  
       elsif EntryMode = CapturingOutboundWeight then  -- Weigh Out
 
         if g_iValueSwapping = 1 then   -- Value Swapping  
@@ -2323,15 +2049,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
                   
         end if; 
 
-        --storing of net weight
-        TransDB.Net :=(TransDB.Gross - TransDB.Tare);
+        TransDB.Net :=( TransDB.Gross - TransDB.Tare);   
         StoreTransaction;
-        SetupStartTimer(12, 10, TimerOneShot);
-
-      -------------------------------------------
-      ----------------LOOK HERE------------------
-      -------------------------------------------       
-        
+        PrintOutboundTicket;
         ClearTare(g_iTotalScale); 
         if g_iStoredTares = 0 then 
           g_sysResult1 := InboundDB.Delete;
@@ -2345,16 +2065,16 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           end if; 
         end if;  
 
-        --if g_iTruckExit = 1 then
-          --SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-          --TurnOffWeighInOutButtons;
-          --TurnOnGreenLight;    
-          --EntryMode := ExitScale;
-        --else
-          --SetLabelText(lbSts1, "Weigh Out Complete"); 
-          --EntryMode := WeighMode;
-          --TurnOnGreenLight;
-        --end if;
+        if g_iTruckExit = 1 then
+          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
+          TurnOffWeighInOutButtons;
+          TurnOnGreenLight;    
+          EntryMode := ExitScale;
+        else
+          SetLabelText(lbSts1, "Weigh Out Complete"); 
+          EntryMode := WeighMode;
+          TurnOnGreenLight;
+        end if;
         
       end if;  
       
@@ -2372,7 +2092,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 	end;  
 
   handler UserEntry;  -- Processing a data entry method
-    --sTemp : string;  
+    sTemp : string;  
   begin   
   
     sTemp := GetEntry; 
@@ -2405,43 +2125,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   end;
 
-
-  handler Timer13Trip;
-  begin
-
-    CalcNetWeight;
-    DisplayTruck;              
-    SetBargraphLevel(bar182, 100);
-    SetBargraphLevel(bar183, 100);
-    SelectScreen(g_ciNetWeight); 
-
-  end;
-
-----------------------------------------------------
-----------------WEIGHOUT SELECTION------------------
-----------------------------------------------------
-  procedure WO_Selection;
-  begin
-
-    if g_iSelect <> 0 then
-      if EntryMode = SelectTruckID_WeighOut then
-        ProcessDataEntry(g_arDisplay[GetSelection_1].sID);
-        if InboundDB.FindFirst(1) = SysOk then        
-          --StoreTransaction;
-          SetupStartTimer(12, 100, TimerOneShot);
-        else 
-          DisplayStatus("Error: Invalid ID");
-          EntryMode :=  SelectInboundDB;    
-        end if;
-      end if;
-    else
-      Displaystatus("Select One to Weight Out");
-      EntryMode :=  SelectInboundDB;    
-    end if;
-
-  end;
-
-
   procedure SelectInboundtoDelete;
     iTouch : integer;
     i : integer;
@@ -2469,37 +2152,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     g_iDelete := g_iWidget;
 
   end;
-
-  procedure SelectInboundtoWeighOut; -------- NEW PROCEDURE
-    iTouch : integer;
-    i : integer;
-  begin
-
-    iTouch := g_iWidget mod 3;
-    for i := minLab2 to maxLab2 
-    loop
-      SetwidgetColor(i, "Black");
-    end loop;
-
-    if iTouch = 1 then
-      Setwidgetcolor(g_iWidget, "#BB0000");
-      SetwidgetColor(g_iWidget + 1, "#BB0000");
-      SetwidgetColor(g_iWidget + 2, "#BB0000");
-      
-    elsif iTouch = 2 then
-      Setwidgetcolor(g_iWidget, "#BB0000");
-      SetwidgetColor(g_iWidget + 1, "#BB0000");
-      SetwidgetColor(g_iWidget - 1, "#BB0000");
-      
-    elsif iTouch = 0 then
-      Setwidgetcolor(g_iWidget, "#BB0000");
-      SetwidgetColor(g_iWidget - 1, "#BB0000");
-      SetwidgetColor(g_iWidget - 2, "#BB0000");
-    end if;
-    g_iSelect := g_iWidget;
-    EntryMode := SelectTruckID_WeighOut;
-
-  end;  
 
   handler WidgetClicked;
     iDigInSts : integer;
@@ -2557,15 +2209,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnWIn and EntryMode = WeighMode then
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
 			SetLabelText(lbSts1, Blank);
-      
-    elsif g_iWidget = btnWOut and EntryMode = WeighMode then
-      --SetLabelText(lbSts1, Blank);
-      --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-      EntryMode := SelectInboundDB;
-      DisplayInboundDB_1;
-      
 
-    elsif g_iWidget = btnID then
+    elsif g_iWidget = btnWOut and EntryMode = WeighMode then
       SetLabelText(lbSts1, Blank);
       WO_Input;
       --PromptForEntry("Enter Truck ID", SelectTruckID_WeighOut, Blank,1); 
@@ -2626,26 +2271,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SelectScreen(g_ciSetup);
       EntryMode := Setup1Mode;
 
-    elsif g_iWidget = btnExt4 then
-			--DisplayStatus(Blank);
-      
-      SelectScreen(g_ciMain);
-      EntryMode := WeighMode;
-      --for i := minLab2 to maxLab2 
-      --loop
-      --  SetwidgetColor(i, "Black");
-      --end loop;
-
-    elsif g_iWidget = btnPgUp4 then
-      g_iPage := g_iPage - 1;   
-      SetSymbolState(g_iWidgetNum, 2);      
-      PageUporDownTruckList_1(g_iPage);     
-    
-    elsif g_iWidget = btnPgDn4 then
-      g_iPage := g_iPage + 1;   
-      SetSymbolState(g_iWidgetNum, 2);       
-      PageUporDownTruckList_1(g_iPage);
-
     elsif g_iWidget = btnPgUp3 then
       g_iPage := g_iPage - 1;            
       PageUporDownCustomerProductList(g_iPage);  
@@ -2677,12 +2302,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= MinLabel and g_iWidget <= MaxLabel then
       SelectInboundtoDelete;
-
-    elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
-      SelectInboundtoWeighOut;
-      WO_Selection;
-      g_iSelect := 0;
-
+ 
     elsif g_iWidget = btnDl then
       DeleteInbound;
 
@@ -2693,39 +2313,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     elsif g_iWidget = btnNo then
       ProcessDataEntry("N");
       g_iDelete := 0;
-
-    elsif g_iWidget = btnprt2  then
-      PrintOutboundTicket;
-      ClearTruck;
-        if g_iTruckExit = 1 then
-          SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-          TurnOffWeighInOutButtons;    
-          EntryMode := ExitScale;
-          SelectScreen(g_ciMain);
-        else
-          SetLabelText(lbSts1, "Weigh Out Complete"); 
-          EntryMode := WeighMode;
-          SelectScreen(g_ciMain);
-        end if;
-
-    elsif g_iWidget = btnNPr  then
-      Print(GrossFmt);
-
-    elsif g_iWidget = btnbck then
-      --if EntryMode = SelectInboundDB then
-      EntryMode := WeighMode;
-      g_rInboundWgt := 0;
-      ClearTruck;
-      SelectScreen(g_ciMain);      
-      --else
-        --EntryMode := SelectInboundDB;
-        --g_rInboundWgt := 0;
-        --ClearTruck;
-        --SelectScreen(g_ciWSelect);
-      --end if;
-
-    elsif g_iWidget = btnAxle then
-      Print(AuxFmt3);
 
     elsif g_iWidget = btnRegs then
      if EntryMode = WeighMode or EntryMode = NoMode or EntryMode = ExitScale then 
@@ -2741,6 +2328,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           PromptForEntry("Enter Password", SetupEnterTPasswordMode, Blank, 3);
         end if; 
       end if;    
+
+    elsif g_iWidget = btnStop or g_iWidget = BtnGo then
+      if g_iTrafficLights = 0 then 
+        if g_sLightStatus = "RED" then 
+          TurnOnGreenLightManually;
+        else
+          TurnOnRedLightManually;
+        end if;   
+      else
+        DisplayStatus("Lights are in Auto Mode");
+      end if; 
     
     elsif g_iWidget = btnSetup then
       if EntryMode = NoMode then  
