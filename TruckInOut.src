@@ -2129,7 +2129,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   procedure WI_Screencheck;
   begin
   if InboundDB.FindFirst(1) = SysOk then
-    SelectScreen(g_ciWISelect); 
+    SelectScreen(g_ciWISelect);
+    --EntryMode :=  
   else
     PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
 
@@ -2141,7 +2142,25 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   procedure WI_Selection;
 
   begin
-  
+
+    if g_iSelect <> 0 then
+      if EntryMode = SelectTruckID_WeighOut then
+        ProcessDataEntry(g_arDisplay[GetSelection_2].sID);
+        if g_arDisplay[GetSelection_2].sID <> Blank then   
+          --StoreTransaction;
+          SetupStartTimer(12, 100, TimerOneShot);
+          
+        else 
+          DisplayStatus("Error: Invalid ID");
+          EntryMode :=  SelectInboundDB;
+          g_iSelect := 0;
+        end if;
+      end if;
+    else
+      Displaystatus("Select One to Weight Out");
+      EntryMode :=  SelectInboundDB;
+      g_iSelect := 0;    
+    end if; 
 
   end;
 
