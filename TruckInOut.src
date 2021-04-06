@@ -1522,13 +1522,7 @@ program TruckInOut;
           
   end; 
 
-
-<<<<<<< HEAD
-  handler Timer12Trip;
-=======
-
   handler Timer12Trip; --Weigh out Timer
->>>>>>> parent of b6e9911 (Update TruckInOut.src)
   begin
     
     CalcNetWeight;
@@ -1540,7 +1534,6 @@ program TruckInOut;
 
   end;
 
-<<<<<<< HEAD
   procedure WO_Input;
   begin
 
@@ -1560,8 +1553,6 @@ program TruckInOut;
   end;
 
 
-=======
->>>>>>> parent of b6e9911 (Update TruckInOut.src)
   procedure ScreenSetup;
   begin
 
@@ -2359,16 +2350,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget = btnID then
       SetLabelText(lbSts1, Blank);
-<<<<<<< HEAD
       WO_Input;
       --PromptForEntry("Enter Truck ID", SelectTruckID_WeighOut, Blank,1); 
       --PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1); 
-=======
-      PromptForEntry("Enter Truck ID", EnterTruckID_WeighOut, Blank,1);
-
->>>>>>> parent of b6e9911 (Update TruckInOut.src)
-
-
+      
+    
     elsif g_iWidget = lbSet7 then 
       PromptForEntry("Enter Product ID", SetupProductID, Blank,1);
 
