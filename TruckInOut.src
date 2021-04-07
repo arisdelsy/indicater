@@ -337,7 +337,7 @@ program TruckInOut;
   end; 
 
 -------------------------------------------------------------------
----------------New function for selection of weighout--------------
+---------------New function for selection of weighin--------------
 -------------------------------------------------------------------
   function GetSelection_2 : integer;  -- Returns the current selected record in the display list    
     i : integer;    
@@ -405,6 +405,26 @@ program TruckInOut;
   begin  
    
     for i := minLab2 to maxLab2
+    loop
+      SetLabelText(i, Chr$(08));
+    end loop;
+
+
+    for i := minId to maxName
+    loop
+      SetLabelText(i, Chr$(08));
+    end loop;
+
+  end;  
+
+  -------------------------------------------------
+  ----NEW Clear Procedure for Selection Screen-----
+  -------------------------------------------------
+  procedure ClearWidgetsData_2;  -- Clear Display  List Screen text boxes
+    i : integer;
+  begin  
+   
+    for i := minLab3 to maxLab3
     loop
       SetLabelText(i, Chr$(08));
     end loop;
@@ -529,6 +549,64 @@ program TruckInOut;
 
   end;
 
+  ------------------------------------------------------
+  ---------NEW Display Selection Screen Widgets---------
+  ------------------------------------------------------
+
+  procedure DisplayInboundDB_2; 
+    i : integer;
+    j : integer;
+  begin 
+
+    -- Clear Text Boxes & Widgets
+    ClearWidgetsData_2;
+    
+    -- Clear Array
+    ClearDisplayListArray; 
+    
+    -- Sort DB or Get Based of Criteria                                       
+    InboundDB.Sort(1);                                    
+    i := 1; 
+    
+    -- FillArray
+    if InboundDB.GetFirst = SysOk then  
+
+      g_arDisplay[i].sID := InboundDB.ID;  
+      g_arDisplay[i].sName := RealToString(InboundDB.InPWgt,0,g_iDecimal);  
+			g_arDisplay[i].sInDT := Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);
+      i := 2;            
+ 
+      while InboundDB.GetNext = SysOk  
+      loop         
+        if i <= g_ciMaxRecords then             
+          g_arDisplay[i].sID := InboundDB.ID;  
+      		g_arDisplay[i].sName := RealToString(InboundDB.InPWgt,0,g_iDecimal);  
+					g_arDisplay[i].sInDT :=Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);                                                      
+          i := i + 1;                          
+        end if;       
+      end loop; 
+      
+    end if; 
+    
+    -- Select Screen, Enable Handlers, Clear Screen and initialize variables
+    SelectScreen(g_ciWISelect);                                       
+    i := minLab3;  
+    SetSymbolState(g_iWidgetNum, 1);
+    g_iPage := 1;          
+    j := 1;   
+    
+    -- Populate Screen
+    while g_arDisplay[j].sID <> Blank and j <= g_ciMaxPerSelectScreen   
+    loop    
+      SetLabelText(i, g_arDisplay[j].sID);
+      SetLabelText(i + 1, g_arDisplay[j].sName); 
+			SetLabelText(i + 2, g_arDisplay[j].sInDT); 
+      i := i + 3;
+      j := j + 1;   
+    end loop;                            
+
+  end;
+
   procedure PageUporDownTruckList(tmpPage : integer);  -- Page Up/Page Down the Display List 
     a : integer;
     i : integer;
@@ -611,6 +689,58 @@ program TruckInOut;
     if g_arDisplay[i].sID = Blank then -- and EntryMode <> SetupSelectTruck then
  
       DisplayInboundDB_1;  
+
+    else  
+      
+      -- Populate display with new data
+      for a := i to j
+      loop  
+        if a > 0 and a <= g_ciMaxRecords and g_arDisplay[a].sID <> Blank then
+          SetLabelText(b, g_arDisplay[a].sID);
+          SetLabelText(b + 1, g_arDisplay[a].sName);  
+					SetLabelText(b + 2, g_arDisplay[a].sInDT);
+          b := b + 3; 
+        end if; 
+      end loop;
+       
+    end if;
+
+  end;
+
+  --------------------------------------------------------
+  ----------NEW Paging up/down selection screen-----------
+  --------------------------------------------------------
+
+  procedure PageUporDownTruckList_2(tmpPage : integer);  -- Page Up/Page Down the Display List 
+    a : integer;
+    i : integer;
+    j : integer;
+    b : integer;
+  begin 
+    
+    -- Clear display
+    for i := minLab3 to maxLab3
+    loop
+      SetLabelText(i, Blank);
+    end loop;
+    
+    -- Find out where we are in the array
+    if tmpPage = 1 then
+      i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
+    elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerSelectScreen) then
+      i := (tmpPage * g_ciMaxPerSelectScreen) - 4;      
+    else
+      i := 1;
+      g_iPage := 1;              
+    end if;
+
+    b := minLab2;
+    j := i + 4; 
+    
+    -- Display the top of the list if we have reach the end 
+    if g_arDisplay[i].sID = Blank then -- and EntryMode <> SetupSelectTruck then
+ 
+      DisplayInboundDB_2;  
 
     else  
       
@@ -863,6 +993,7 @@ program TruckInOut;
 
   end;    
 
+
   procedure PageUporDownCustomerProductList(tmpPage : integer);  -- Page Up/Page Down the Display List 
     a : integer;
     i : integer;
@@ -1052,7 +1183,7 @@ program TruckInOut;
       TransDB.CustId := CustomerDB.Id;
       g_currentNet := rTotalWgt - ReportDB.Net;
       displayNet  :=  RealToString(g_currentNet, 6, g_iDecimal) + " " + GetCurrentUnitsString(1);
-      SetLabelText(lbl136, displayNet);
+      SetLabelText(idnet, displayNet);
   end;
 
   procedure DisplayTruck;  --Display Truck ID
@@ -1227,7 +1358,7 @@ program TruckInOut;
           WaitSS(1);
         end if;
       end if; 
-    --weigh in
+    --weigh in          CHECK HERE!
     elsif EntryMode = EnterTruckID_WeighIn then 
       
       if IsValid(sTemp, "S", 15) then  
@@ -1243,6 +1374,27 @@ program TruckInOut;
           SetLabelText(lbSts1, "Truck Already Weighed In"); 
           ReadytoProcessTruck(100); 
         end if;             
+      else     
+        SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
+        ReadytoProcessTruck(100); 
+      end if;  
+
+    --weigh in selection          --------CHECK HERE!-------
+    elsif EntryMode = SelectTruckID_Update then 
+      
+      if IsValid(sTemp, "S", 15) then  
+        InboundDB.ID := sTemp;
+
+        --g_sysResult_2 := InboundDB.FindFirst(Inbound_Id);         
+        --if g_sysResult_2 = SysOk then
+        EntryMode := CapturingInboundWeight;   
+          --WaitSS(1);
+          ---------NEW
+          --DisplayTruck;          
+        --else     
+          --SetLabelText(lbSts1, "Truck Already Weighed In");
+          --ReadytoProcessTruck(100); 
+        --end if;             
       else     
         SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
         ReadytoProcessTruck(100); 
@@ -2129,11 +2281,12 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   procedure WI_Screencheck;
   begin
   if InboundDB.FindFirst(1) = SysOk then
-    SelectScreen(g_ciWISelect);
-    --EntryMode :=  
+    DisplayInboundDB_2;
+    --Entrymode := SelectInboundDB
+    
   else
     PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
-
+  end if;
   end;
 
 ----------------------------------------------------
@@ -2148,11 +2301,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         ProcessDataEntry(g_arDisplay[GetSelection_2].sID);
         if g_arDisplay[GetSelection_2].sID <> Blank then   
           --StoreTransaction;
-          SetupStartTimer(12, 100, TimerOneShot);
-          
+          EntryMode := SelectTruckID_Update;
         else 
           DisplayStatus("Error: Invalid ID");
-          EntryMode :=  SelectInboundDB;
+          EntryMode := SelectInboundDB;
           g_iSelect := 0;
         end if;
       end if;
@@ -2280,8 +2432,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(g_iWidget - 2, "#BB0000");
     end if;
     g_iSelect := g_iWidget;
-    EntryMode := SelectTruckID_Update;
-    WI_Selection;
+    --WI_Selection;
 
   end;  
 
@@ -2342,6 +2493,10 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       --PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
 			--SetLabelText(lbSts1, Blank);
       WI_Screencheck;
+
+    elsif g_iWidget = btnWIn1 and EntryMode = SelectInboundDB then
+
+      PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
 
     elsif g_iWidget = btnWOut and EntryMode = WeighMode then
       --SetLabelText(lbSts1, Blank);
@@ -2420,6 +2575,20 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       --  SetwidgetColor(i, "Black");
       --end loop;
 
+    elsif g_iWidget = btnExt5 then
+      SelectScreen(g_ciMain);
+      EntryMode := WeighMode;
+
+    elsif g_iWidget = btnPgUp5 then
+      g_iPage := g_iPage - 1;   
+      SetSymbolState(g_iWidgetNum, 2);      
+      PageUporDownTruckList_2(g_iPage);  
+
+    elsif g_iWidget = btnPgDn5 then
+      g_iPage := g_iPage + 1;   
+      SetSymbolState(g_iWidgetNum, 2);       
+      PageUporDownTruckList_2(g_iPage);
+
     elsif g_iWidget = btnPgUp4 then
       g_iPage := g_iPage - 1;   
       SetSymbolState(g_iWidgetNum, 2);      
@@ -2464,8 +2633,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab2 and g_iWidget <= maxLab2 then
       SelectInboundtoWeighOut;
-      --WO_Selection;
-      --g_iSelect := 0;
+
+    elsif g_iWidget >= minLab3 and g_iWidget <= maxLab3 then
+      SelectInboundtoUpdate;
 
     elsif g_iWidget = btnDl then
       DeleteInbound;
