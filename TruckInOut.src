@@ -2165,6 +2165,52 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         ClearTare(g_iTotalScale);  
 				EntryMode := ExitScale;
 
+      -------------------------------------------
+      ---------------NEW!LOOK HERE---------------
+      -------------------------------------------
+
+     elsif EntryMode = CapturingUpdateWeight then  -- Update Tare
+        
+        InboundDB.DT := SystemTime; 
+        InboundDB.InPWgt := rPGrossWgt;
+        InboundDB.InSWgt := rSGrossWgt;
+        InboundDB.InTWgt := rTGrossWgt;
+        --g_sysResult1 := InboundDB.Add;
+        
+        if g_sysResult_2 = SysOk then      
+          --PrintInboundTicket;  -- Print Inbound Ticket
+          
+          if g_iTruckExit = 1 then
+            SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
+            TurnOffWeighInOutButtons;      
+            ClearTare(g_iTotalScale);
+            EntryMode := ExitScale;	
+          else
+            SetLabelText(lbSts1, "Weigh In Complete"); 
+            EntryMode := WeighMode;
+          end if;		
+
+        else 
+          SetLabelText(lbSts1, "Database Error: " + SysCodeToString(g_sysResult1));
+        	ReadytoProcessTruck(200);  					
+        end if;  
+
+      elsif EntryMode = CapturingKeyTareWeight then
+        
+        TransDB.Gross := rGrossWgt;
+        TransDB.Tare := rTareWgt; 
+        TransDB.Net := (TransDB.Gross - TransDB.Tare);         
+        SetPrintText(3, Blank);
+        SetPrintText(5, "KEYED"); 
+        StoreTransaction;           
+        PrintOutboundTicket;
+
+        
+      SetLabelText(lbSts1,"Net. Weight"); 
+			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
+        TurnOffWeighInOutButtons;             
+        ClearTare(g_iTotalScale);  
+				EntryMode := ExitScale;
 
       -------------------------------------------
       ----------------LOOK HERE------------------
@@ -2282,7 +2328,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
   if InboundDB.FindFirst(1) = SysOk then
     DisplayInboundDB_2;
-    --Entrymode := SelectInboundDB
+    Entrymode := SelectInboundDB;
     
   else
     PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
@@ -2416,17 +2462,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(i, "Black");
     end loop;
 
-    if iTouch = 1 then
+    if iTouch = 2 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget + 2, "#BB0000");
       
-    elsif iTouch = 2 then
+    elsif iTouch = 0 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       
-    elsif iTouch = 0 then
+    elsif iTouch = 1 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       SetwidgetColor(g_iWidget - 2, "#BB0000");
