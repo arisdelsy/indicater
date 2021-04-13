@@ -2282,7 +2282,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
   if InboundDB.FindFirst(1) = SysOk then
     DisplayInboundDB_2;
-    --Entrymode := SelectInboundDB
+    Entrymode := SelectInboundDB;
     
   else
     PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
@@ -2416,17 +2416,17 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(i, "Black");
     end loop;
 
-    if iTouch = 1 then
+    if iTouch = 2 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget + 2, "#BB0000");
       
-    elsif iTouch = 2 then
+    elsif iTouch = 0 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget + 1, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       
-    elsif iTouch = 0 then
+    elsif iTouch = 1 then
       Setwidgetcolor(g_iWidget, "#BB0000");
       SetwidgetColor(g_iWidget - 1, "#BB0000");
       SetwidgetColor(g_iWidget - 2, "#BB0000");
