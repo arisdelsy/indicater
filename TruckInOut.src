@@ -56,6 +56,7 @@ program TruckInOut;
   CapturingOutboundWeight : constant integer := 116; 
   CapturingKeyTareWeight  : constant integer := 117; 
 	ExitScale								: constant integer := 118;
+  CapturingUpdateWeight   : constant integer := 119;
 	  
   SetupEnterTPasswordMode : constant integer := 120; 
   SelectInboundDB         : constant integer := 121;  
@@ -1382,23 +1383,31 @@ program TruckInOut;
     --weigh in selection          --------CHECK HERE!-------
     elsif EntryMode = SelectTruckID_Update then 
       
-      if IsValid(sTemp, "S", 15) then  
+      for i := minlab3 to maxlab3 
+      loop
+        SetwidgetColor(i, "Black");
+      end loop;
+  
+      --if IsValid(sTemp, "S", 15) then  
+      if sTemp = "Y" then
         InboundDB.ID := sTemp;
 
         --g_sysResult_2 := InboundDB.FindFirst(Inbound_Id);         
         --if g_sysResult_2 = SysOk then
-        EntryMode := CapturingInboundWeight;   
+        EntryMode := CapturingUpdateWeight;   
           --WaitSS(1);
           ---------NEW
           --DisplayTruck;          
-        --else     
+      else
+        SelectScreen(g_ciWISelect);
+        SetLabelText(lbSts1 , "Update Canceled");     
           --SetLabelText(lbSts1, "Truck Already Weighed In");
           --ReadytoProcessTruck(100); 
-        --end if;             
-      else     
-        SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
-        ReadytoProcessTruck(100); 
-      end if;  
+      end if;             
+      --else     
+        --SetLabelText(lbSts1 , "Error: Invalid Truck Id"); 
+        --ReadytoProcessTruck(100); 
+      --end if;  
     -------------------------NEW CHAGNES---------------------------- 
     --Under the entry mode changes I entered it to select screen
     --weigh out
@@ -1522,11 +1531,11 @@ program TruckInOut;
       end if;                
 
     elsif EntryMode = YNClearOneInbound then
-
       for i := MinLabel to MaxLabel 
       loop
         SetwidgetColor(i, "Black");
       end loop;
+
 
       if sTemp = "Y" then
         g_sysResult1 := InboundDB.Delete;
@@ -1685,6 +1694,14 @@ program TruckInOut;
     SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
     g_iSelect := 0;
+
+  end;
+
+  procedure ConfirmUpdate;
+  begin
+
+    SelectScreen(g_ciYesNo);         
+    Setlabeltext(lbYN,"Do you want to Update ID " + InboundDB.ID + "?");
 
   end;
 
@@ -2175,9 +2192,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         InboundDB.InPWgt := rPGrossWgt;
         InboundDB.InSWgt := rSGrossWgt;
         InboundDB.InTWgt := rTGrossWgt;
-        --g_sysResult1 := InboundDB.Add;
+        g_sysResult1 := InboundDB.Update;
         
-        if g_sysResult_2 = SysOk then      
+        if g_sysResult1 = SysOk then      
           --PrintInboundTicket;  -- Print Inbound Ticket
           
           if g_iTruckExit = 1 then
@@ -2185,32 +2202,18 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
             TurnOffWeighInOutButtons;      
             ClearTare(g_iTotalScale);
             EntryMode := ExitScale;	
+            SelectScreen(g_ciMain);
           else
             SetLabelText(lbSts1, "Weigh In Complete"); 
             EntryMode := WeighMode;
+            SelectScreen(g_ciMain);
           end if;		
 
-        else 
+        else
+          SelectScreen(g_ciWISelect); 
           SetLabelText(lbSts1, "Database Error: " + SysCodeToString(g_sysResult1));
         	ReadytoProcessTruck(200);  					
         end if;  
-
-      elsif EntryMode = CapturingKeyTareWeight then
-        
-        TransDB.Gross := rGrossWgt;
-        TransDB.Tare := rTareWgt; 
-        TransDB.Net := (TransDB.Gross - TransDB.Tare);         
-        SetPrintText(3, Blank);
-        SetPrintText(5, "KEYED"); 
-        StoreTransaction;           
-        PrintOutboundTicket;
-
-        
-      SetLabelText(lbSts1,"Net. Weight"); 
-			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
-        TurnOffWeighInOutButtons;             
-        ClearTare(g_iTotalScale);  
-				EntryMode := ExitScale;
 
       -------------------------------------------
       ----------------LOOK HERE------------------
@@ -2274,13 +2277,13 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           --TurnOnGreenLight;
         --end if;
         
-      end if;  
+      --end if;  
       
     else
       SetLabelText(lbSts1, "...In Motion...");
     end if;
 
-  end;   
+  end;
 
 	handler Timer29Trip;
 	begin
@@ -2478,6 +2481,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(g_iWidget - 2, "#BB0000");
     end if;
     g_iSelect := g_iWidget;
+    ConfirmUpdate;
     --WI_Selection;
 
   end;  
@@ -2682,6 +2686,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     elsif g_iWidget >= minLab3 and g_iWidget <= maxLab3 then
       SelectInboundtoUpdate;
+      --ConfirmUpdate;
 
     elsif g_iWidget = btnDl then
       DeleteInbound;
