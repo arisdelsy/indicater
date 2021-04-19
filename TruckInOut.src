@@ -16,7 +16,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2.8.1"; --Version of our program
+  as_Version            : constant string  := "1.2.9"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -1476,7 +1476,7 @@ program TruckInOut;
             --if g_iNbrofCustomers >= 2 then
               --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
             --else
-              EntryMode := CapturingOutboundWeight;
+              EntryMode := CapturingUpdateWeight;
               WaitSS(g_iTotalScale); 
             --end if;
           --end if;        
@@ -2176,7 +2176,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         PrintOutboundTicket;
 
         
-      SetLabelText(lbSts1,"Net. Weight"); 
+        SetLabelText(lbSts1,"Net. Weight"); 
 			--SetLabelText(lbSts1,"Net. Weight"TransDB.Net); 
         TurnOffWeighInOutButtons;             
         ClearTare(g_iTotalScale);  
@@ -2330,9 +2330,9 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   procedure WI_Screencheck;
   begin
   if InboundDB.FindFirst(1) = SysOk then
+    Entrymode := SelectInboundDB;    
     DisplayInboundDB_2;
-    Entrymode := SelectInboundDB;
-    
+
   else
     PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
   end if;
@@ -2482,7 +2482,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
     end if;
     g_iSelect := g_iWidget;
     ConfirmUpdate;
-    --WI_Selection;
 
   end;  
 
@@ -2544,7 +2543,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 			--SetLabelText(lbSts1, Blank);
       WI_Screencheck;
 
-    elsif g_iWidget = btnWIn1 and EntryMode = SelectInboundDB then
+    elsif g_iWidget = btnWIn1 then
 
       PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
 
