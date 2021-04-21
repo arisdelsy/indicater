@@ -118,6 +118,7 @@ program TruckInOut;
   
   --Selection system result
   g_sysResult_1 : SysCode;
+  g_sysResult_2 : SysCode;
 
 	g_sysResult2 : SysCode;
   g_iDebug : integer;
@@ -585,7 +586,7 @@ program TruckInOut;
 					g_arDisplay[i].sInDT :=Time$(InboundDB.DT) + " " + Date$(InboundDB.DT);                                                      
           i := i + 1;                          
         end if;       
-      end loop; 
+      end loop;
       
     end if; 
     
@@ -1211,7 +1212,11 @@ program TruckInOut;
     
     if EntryMode >= Setup1Mode and EntryMode < Setup2Mode then      
       EntryMode := Setup1Mode;   
-    elsif Entrymode = EnterTruckID_WeighIn or EntryMode <= EnterCustomerID then  
+    elsif Entrymode = EnterTruckID_WeighIn then 
+      SetLabelText(lbSts1, Blank); 
+      EntryMode := WeighMode;
+      SelectScreen(g_ciMain);
+    elsif Entrymode = EnterCustomerID then
       SetLabelText(lbSts1, Blank); 
       EntryMode := WeighMode;
     elsif Entrymode = SetupEnterTPasswordMode then
@@ -1390,16 +1395,20 @@ program TruckInOut;
   
       --if IsValid(sTemp, "S", 15) then  
       if sTemp = "Y" then
-        InboundDB.ID := sTemp;
-
-        --g_sysResult_2 := InboundDB.FindFirst(Inbound_Id);         
-        --if g_sysResult_2 = SysOk then
-        EntryMode := CapturingUpdateWeight;   
-          --WaitSS(1);
+        g_sysResult_2 := InboundDB.FindFirst(Inbound_Id);         
+        if g_sysResult_2 = SysOk then
+          EntryMode := CapturingUpdateWeight;   
+          WaitSS(1);
           ---------NEW
-          --DisplayTruck;          
+          --DisplayTruck;
+         else
+          SelectScreen(g_ciWISelect); 
+          SetLabelText(lbSts1, "Database Error: " + SysCodeToString(g_sysResult1));
+        	ReadytoProcessTruck(200);  					
+  
+        end if;         
       else
-        SelectScreen(g_ciWISelect);
+        DisplayInboundDB_2;
         SetLabelText(lbSts1 , "Update Canceled");     
           --SetLabelText(lbSts1, "Truck Already Weighed In");
           --ReadytoProcessTruck(100); 
@@ -1476,7 +1485,7 @@ program TruckInOut;
             --if g_iNbrofCustomers >= 2 then
               --PromptForEntry("Enter Customer ID", EnterCustomerID, Blank,1);  
             --else
-              EntryMode := CapturingUpdateWeight;
+              EntryMode := CapturingOutboundWeight;
               WaitSS(g_iTotalScale); 
             --end if;
           --end if;        
@@ -1701,7 +1710,8 @@ program TruckInOut;
   begin
 
     SelectScreen(g_ciYesNo);         
-    Setlabeltext(lbYN,"Do you want to Update ID " + InboundDB.ID + "?");
+    Setlabeltext(lbYN,"Do you want to Update ID " + g_arDisplay[GetSelection_2].sID + "?");
+    EntryMode := SelectTruckID_Update;
 
   end;
 
@@ -2154,15 +2164,18 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
             SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
             TurnOffWeighInOutButtons;      
             ClearTare(g_iTotalScale);
-            EntryMode := ExitScale;	
+            EntryMode := ExitScale;
+            SelectScreen(g_ciMain);	
           else
             SetLabelText(lbSts1, "Weigh In Complete"); 
             EntryMode := WeighMode;
+            SelectScreen(g_ciMain);	
           end if;		
 
         else 
           SetLabelText(lbSts1, "Database Error: " + SysCodeToString(g_sysResult1));
-        	ReadytoProcessTruck(200);  					
+        	ReadytoProcessTruck(200);
+          SelectScreen(g_ciMain);	  					
         end if;  
 
       elsif EntryMode = CapturingKeyTareWeight then
@@ -2187,24 +2200,23 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       -------------------------------------------
 
      elsif EntryMode = CapturingUpdateWeight then  -- Update Tare
-        
+        InboundDB.Id := g_arDisplay[GetSelection_2].sID;
         InboundDB.DT := SystemTime; 
         InboundDB.InPWgt := rPGrossWgt;
         InboundDB.InSWgt := rSGrossWgt;
         InboundDB.InTWgt := rTGrossWgt;
         g_sysResult1 := InboundDB.Update;
-        
+
         if g_sysResult1 = SysOk then      
           --PrintInboundTicket;  -- Print Inbound Ticket
-          
           if g_iTruckExit = 1 then
-            SetLabelText(lbSts1, "Weigh In Complete - Exit Scale");
+            SetLabelText(lbSts1, "Update Complete - Exit Scale");
             TurnOffWeighInOutButtons;      
             ClearTare(g_iTotalScale);
             EntryMode := ExitScale;	
             SelectScreen(g_ciMain);
           else
-            SetLabelText(lbSts1, "Weigh In Complete"); 
+            SetLabelText(lbSts1, "Update Complete"); 
             EntryMode := WeighMode;
             SelectScreen(g_ciMain);
           end if;		
@@ -2277,7 +2289,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
           --TurnOnGreenLight;
         --end if;
         
-      --end if;  
+      end if;  
       
     else
       SetLabelText(lbSts1, "...In Motion...");
@@ -2329,13 +2341,13 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
   procedure WI_Screencheck;
   begin
-  if InboundDB.FindFirst(1) = SysOk then
+  --if InboundDB.FindFirst() = SysOk then
     Entrymode := SelectInboundDB;    
     DisplayInboundDB_2;
 
-  else
-    PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
-  end if;
+  --else
+    --PromptForEntry("Enter Truck ID", EnterTruckID_WeighIn, Blank,1);
+  --end if;
   end;
 
 ----------------------------------------------------
@@ -2346,11 +2358,11 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
   begin
 
     if g_iSelect <> 0 then
-      if EntryMode = SelectTruckID_WeighOut then
-        ProcessDataEntry(g_arDisplay[GetSelection_2].sID);
+      if EntryMode = SelectInboundDB then
+        --ProcessDataEntry(g_arDisplay[GetSelection_2].sID);
         if g_arDisplay[GetSelection_2].sID <> Blank then   
           --StoreTransaction;
-          EntryMode := SelectTruckID_Update;
+          ConfirmUpdate;
         else 
           DisplayStatus("Error: Invalid ID");
           EntryMode := SelectInboundDB;
@@ -2481,7 +2493,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       SetwidgetColor(g_iWidget - 2, "#BB0000");
     end if;
     g_iSelect := g_iWidget;
-    ConfirmUpdate;
+    --ConfirmUpdate;
+    WI_Selection;
 
   end;  
 
