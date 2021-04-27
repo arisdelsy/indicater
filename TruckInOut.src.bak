@@ -5,8 +5,8 @@
 -- “Import Files”.  
 -- Property of Arlington Scale Co. 
 ------------------------------------------------------------------------------
----------------------------------ASCV1.2.9------------------------------------
----------------------------------KNOWN BUGS-----------------------------------
+---------------------------------ASCV1.3.0------------------------------------
+
 
 program TruckInOut; 
  
@@ -16,7 +16,7 @@ program TruckInOut;
   g_csProgName          : constant string  := "TruckInOut"; --Program Name 
   g_csVersion           : constant string  := "1.06"; --Program Version  
   
-  as_Version            : constant string  := "1.2.9"; --Version of our program
+  as_Version            : constant string  := "1.3.0"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
   g_ciPrinter           : constant integer := 1;
@@ -1079,8 +1079,8 @@ program TruckInOut;
   procedure DisplayVersion;    -- Displays Version Number and program name on startup or exiting config   
   begin   
   
-    DisplayStatus(g_csProgName + " " + g_csVersion); 
-    SetLabelText(lbProg, "Program: " + g_csProgName + " " + g_csVersion);  
+    DisplayStatus(g_csProgName + " " + as_Version); 
+    SetLabelText(lbProg, "Program: " + g_csProgName + " " + as_Version);  
     
   end; 
   
@@ -2199,8 +2199,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       ---------------NEW!LOOK HERE---------------
       -------------------------------------------
 
-     elsif EntryMode = CapturingUpdateWeight then  -- Update Tare
-        InboundDB.Id := g_arDisplay[GetSelection_2].sID;
+     elsif EntryMode = CapturingUpdateWeight then  -- Update Tare (Weigh in)
         InboundDB.DT := SystemTime; 
         InboundDB.InPWgt := rPGrossWgt;
         InboundDB.InSWgt := rSGrossWgt;
