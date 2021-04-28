@@ -728,7 +728,7 @@ program TruckInOut;
     
     -- Find out where we are in the array
     if tmpPage = 1 then
-      i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 8
+      i := 1;                          -- g_ciMaxRecords MUST BE MULTIPLE OF 5
     elsif tmpPage >= 2 and tmpPage <= (g_ciMaxRecords/g_ciMaxPerSelectScreen) then
       i := (tmpPage * g_ciMaxPerSelectScreen) - 4;      
     else
@@ -736,7 +736,7 @@ program TruckInOut;
       g_iPage := 1;              
     end if;
 
-    b := minLab2;
+    b := minLab3;
     j := i + 4; 
     
     -- Display the top of the list if we have reach the end 
