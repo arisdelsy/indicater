@@ -154,6 +154,7 @@ program TruckInOut;
 -- Variable storing temp string entry
   sTemp : string;
 
+
   type boolean is (False,True); 
   g_bUpdate : boolean;
   g_bTareOption : boolean;
@@ -1399,9 +1400,7 @@ program TruckInOut;
         if g_sysResult_2 = SysOk then
           EntryMode := CapturingUpdateWeight;   
           WaitSS(1);
-          ---------NEW
-          --DisplayTruck;
-         else
+        else
           SelectScreen(g_ciWISelect); 
           SetLabelText(lbSts1, "Database Error: " + SysCodeToString(g_sysResult1));
         	ReadytoProcessTruck(200);  					
@@ -1710,7 +1709,7 @@ program TruckInOut;
   begin
 
     SelectScreen(g_ciYesNo);         
-    Setlabeltext(lbYN,"Do you want to Update ID " + g_arDisplay[GetSelection_2].sID + "?");
+    Setlabeltext(lbYN,"Do you want to Update ID " + InboundDB.ID + "?");
     EntryMode := SelectTruckID_Update;
 
   end;
@@ -2358,8 +2357,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
 
     if g_iSelect <> 0 then
       if EntryMode = SelectInboundDB then
-        --ProcessDataEntry(g_arDisplay[GetSelection_2].sID);
-        if g_arDisplay[GetSelection_2].sID <> Blank then   
+        InboundDB.ID := g_arDisplay[GetSelection_2].sID;
+        if InboundDB.FindFirst(1) = SysOk then   
           --StoreTransaction;
           ConfirmUpdate;
         else 
