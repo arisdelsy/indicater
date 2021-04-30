@@ -307,7 +307,7 @@ lbl202    : constant integer := 202;
 lbl203    : constant integer := 203;
 lbl204    : constant integer := 204;
 maxlab3   : constant integer := 205;
-lbl206    : constant integer := 206;
+btnWIn1   : constant integer := 206;
 btnPgUp5  : constant integer := 207;
 btnExt5   : constant integer := 208;
 line209   : constant integer := 209;
@@ -317,8 +317,6 @@ line212   : constant integer := 212;
 btnPgDn5  : constant integer := 213;
 line214   : constant integer := 214;
 line215   : constant integer := 215;
-bar216    : constant integer := 216;
-btnWIn1   : constant integer := 217;
 
 USBPRN    : constant string := "USBPRN";
 ADVPRN    : constant string := "ADVPRN";
