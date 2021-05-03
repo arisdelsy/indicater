@@ -2359,7 +2359,6 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       if EntryMode = SelectInboundDB then
         InboundDB.ID := g_arDisplay[GetSelection_2].sID;
         if InboundDB.FindFirst(1) = SysOk then   
-          --StoreTransaction;
           ConfirmUpdate;
         else 
           DisplayStatus("Error: Invalid ID");
@@ -2368,7 +2367,7 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
         end if;
       end if;
     else
-      Displaystatus("Select One to Weight Out");
+      Displaystatus("Select One to Weight In");
       EntryMode :=  SelectInboundDB;
       g_iSelect := 0;    
     end if; 
