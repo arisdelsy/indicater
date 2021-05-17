@@ -4,7 +4,7 @@
   <IndicatorModel value="1280" />
   <IndicatorVersion value="1.07+" />
   <ChildAssembly value="rev1280.v305.dll" />
-  <ConfigHash value="95 197 211 229 48 20 112 195 11 252 231 214 243 153 168 176 225 49 34 119 " />
+  <ConfigHash value="243 41 83 231 124 80 43 49 160 16 108 110 174 168 34 157 246 102 3 253 " />
   <CODFile value="C:\AACode\1280_TruckInOut_PN181077\source\TruckInOut.cod" />
   <Config>SC.ALIAS#1=Scale130
 SC.CAPACITY#1=120000
@@ -13439,7 +13439,6 @@ WDGT#202=4,410,219,271,47,Caption,1,1,22,Black,lbl202,2,0,0,1,7
 WDGT#203=4,9,276,240,47,Caption,1,1,22,Black,lbl203,2,0,0,1,7
 WDGT#204=4,255,274,150,47,Caption,1,1,22,Black,lbl204,2,0,0,1,7
 WDGT#205=4,410,274,271,47,Caption,1,1,22,Black,maxlab3,2,0,0,1,7
-WDGT#206=4,8,331,677,49,Enter ID,2,3,30,Black,lbl206,4,0,0,1,7
 WDGT#207=7,703,83,72,72,1,1,0,local://19.png,7,btnPgUp5
 WDGT#208=7,703,7,72,72,1,1,0,local://9.png,7,btnExt5
 WDGT#209=10,9,109,675,1,1,1,Silver,7
