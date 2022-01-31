@@ -19,7 +19,7 @@ program TruckInOut;
   as_Version            : constant string  := "1.3.0"; --Version of our program
 
   g_ciDigSlot           : constant integer := 0;  
-  g_ciPrinter           : constant integer := 1;
+  g_ciPrinter           : constant integer := 1; --Port Number for printer (Serial #1)
   g_ciDigInOn           : constant integer := 0; --Digital Input is On 
   g_ciDigInOff          : constant integer := 1; --Digital Input is Off
   g_ciDigOutOn          : constant integer := 1; --Digital Output is On
