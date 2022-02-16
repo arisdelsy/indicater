@@ -1341,8 +1341,8 @@ program TruckInOut;
 
     elsif EntryMode = EnterCustomerID then
 
-      CustomerDB.Id := sTemp;
-      if CustomerDB.FindFirst(Customer_ID) = SysOk then 
+      CustomerDB.Id := sTemp; -- the value of stemp is stored in id 
+      if CustomerDB.FindFirst(Customer_ID) = SysOk then  --find id in row 
         g_sCustomerID := CustomerDB.ID;
         g_sCustomerName := CustomerDB.Name;
         if g_bTareOption = False then
