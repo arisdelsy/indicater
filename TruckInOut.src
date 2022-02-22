@@ -95,7 +95,7 @@ program TruckInOut;
   -- NEW Selection Screen Modes
   SelectTruck : constant integer := 3000;
   LoadTruck   : constant integer := 4000;
-    CancelTruck   : constant integer := 4001;  
+  CancelTruck   : constant integer := 4001;  
 
   g_ciMaxPerSelectScreen    : constant integer := 5;
   g_ciMaxPerScreen          : constant integer := 8; 
