@@ -4,7 +4,7 @@
   <IndicatorModel value="1280" />
   <IndicatorVersion value="1.07+" />
   <ChildAssembly value="rev1280.v305.dll" />
-  <ConfigHash value="243 41 83 231 124 80 43 49 160 16 108 110 174 168 34 157 246 102 3 253 " />
+  <ConfigHash value="119 254 65 242 199 54 28 215 108 182 32 0 124 217 175 193 133 161 42 102 " />
   <CODFile value="C:\AACode\1280_TruckInOut_PN181077\source\TruckInOut.cod" />
   <Config>SC.ALIAS#1=Scale130
 SC.CAPACITY#1=120000
@@ -687,7 +687,7 @@ SK.OP#29=NONE
 SK.OP#30=NONE
 SK.OP#31=NONE
 SK.OP#32=NONE
-HARDWARE=3,2,0,0,0,0
+HARDWARE=2,3,0,0,0,0
 DIO.1#0=OUTPUT
 DIO.ALIAS.1#0=DIO0_1  
 DIO.2#0=OUTPUT

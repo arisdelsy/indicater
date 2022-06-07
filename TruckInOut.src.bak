@@ -95,7 +95,7 @@ program TruckInOut;
   -- NEW Selection Screen Modes
   SelectTruck : constant integer := 3000;
   LoadTruck   : constant integer := 4000;
-    CancelTruck   : constant integer := 4001;  
+  CancelTruck   : constant integer := 4001;  
 
   g_ciMaxPerSelectScreen    : constant integer := 5;
   g_ciMaxPerScreen          : constant integer := 8; 
@@ -1341,8 +1341,8 @@ program TruckInOut;
 
     elsif EntryMode = EnterCustomerID then
 
-      CustomerDB.Id := sTemp;
-      if CustomerDB.FindFirst(Customer_ID) = SysOk then 
+      CustomerDB.Id := sTemp; -- the value of stemp is stored in id 
+      if CustomerDB.FindFirst(Customer_ID) = SysOk then  --find id in row 
         g_sCustomerID := CustomerDB.ID;
         g_sCustomerName := CustomerDB.Name;
         if g_bTareOption = False then
@@ -2264,17 +2264,22 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       -------------------------------------------       
         
         ClearTare(g_iTotalScale); 
-        if g_iStoredTares = 0 then 
-          g_sysResult1 := InboundDB.Delete;
-          if g_sysResult1 <> SysOk then
-            DisplayStatus("Database Error: " + SysCodeToString(g_sysResult1));
-          end if; 
-        elsif g_iStoredTares = 1 and g_Decimal > 0 then
-          g_sysResult1 := InboundDB.Delete;
-          if g_sysResult1 <> SysOk then
-            DisplayStatus("Database Error: " + SysCodeToString(g_sysResult1));
-          end if; 
-        end if;  
+        
+        -------------------------------------------------------------------------------------------
+        -- commented out is the option of deleting the stored truck info for stored tare
+        -------------------------------------------------------------------------------------------
+        --if g_iStoredTares = 0 then 
+          --g_sysResult1 := InboundDB.Delete;
+          --if g_sysResult1 <> SysOk then
+            --DisplayStatus("Database Error: " + SysCodeToString(g_sysResult1));
+          --end if; 
+        --elsif g_iStoredTares = 1 and g_Decimal > 0 then
+          --g_sysResult1 := InboundDB.Delete;
+          --if g_sysResult1 <> SysOk then
+            --DisplayStatus("Database Error: " + SysCodeToString(g_sysResult1));
+          --end if; 
+        --end if;  
+        -------------------------------------------------------------------------------------------
 
         --if g_iTruckExit = 1 then
           --SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
@@ -2714,7 +2719,8 @@ if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
       ClearTruck;
         if g_iTruckExit = 1 then
           SetLabelText(lbSts1, "Weigh Out Complete - Exit Scale");
-          TurnOffWeighInOutButtons;    
+          TurnOffWeighInOutButtons;
+          g_sysResult1 := InboundDB.Delete;    
           EntryMode := ExitScale;
           SelectScreen(g_ciMain);
         else
