@@ -1196,11 +1196,26 @@ program TruckInOut;
   end;
 
   procedure NetTruck;
+  total_w   : real;
+  scale1_w  : real;
+  scale2_w  : real;
+  scale3_w  : real;
   begin
-      displayTruckid := InboundDB.Id; 
+      displayTruckid := InboundDB.Id;
+      
+      --capturing the weights to display in the widgets
+      GetGross(1,Primary,scale1_w); 
+      GetGross(2,Primary,scale2_w); 
+      GetGross(3,Primary,scale3_w); 
+      GetGross(g_iTotalScale, Primary, total_w);
+
+      --Displaying onto widgets
       SetLabelText(lbl138, displayTruckid);
-      SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal));
-      SetLabelText()
+      SetLabelText(idtare, RealToString(TransDB.Tare, 6, g_iDecimal)+ " " + GetCurrentUnitsString(4));
+      SetLabelText(lblSc1, RealToString(scale1_w, 6, g_iDecimal)+ " " + GetCurrentUnitsString(4));
+      SetLabelText(lblSc2, RealToString(scale2_w, 6, g_iDecimal)+ " " + GetCurrentUnitsString(4));
+      SetLabelText(lblSc3, RealToString(scale3_w, 6, g_iDecimal)+ " " + GetCurrentUnitsString(4));
+      SetLabelText(lblScT, RealToString(total_w, 6, g_iDecimal)+ " " + GetCurrentUnitsString(4));
   end;
 
   procedure ReadytoProcessTruck(iTime : integer);  -- Removes Display Status Message
@@ -1703,7 +1718,7 @@ program TruckInOut;
     
     CalcNetWeight;
     --DisplayTruck;
-    NetTruck              
+    NetTruck;              
     SetBargraphLevel(bar182, 100);
     SetBargraphLevel(bar183, 100);
     SelectScreen(g_ciNetWeight); 
@@ -1733,20 +1748,21 @@ program TruckInOut;
   procedure HowmanyScales;
   begin
 
-if GetUnits(1, g_uUnits) = SysOk then
-if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
-       g_iDecimal := CalcDecimal(g_rCountby); 
-   end if;
- end if;   
-   if GetCapacity(1, g_uUnits, g_rCapacity) = SysOk then
-      g_iTotalScale := 1;
-   if GetCapacity(2, g_uUnits, g_rCapacity) = SysOk then
+    if GetUnits(1, g_uUnits) = SysOk then
+      if GetCountBy(1, g_uUnits, g_rCountby) = SysOk then
+          g_iDecimal := CalcDecimal(g_rCountby); 
+      end if;
+    end if;   
+
+    if GetCapacity(1, g_uUnits, g_rCapacity) = SysOk then
+        g_iTotalScale := 1;
+      if GetCapacity(2, g_uUnits, g_rCapacity) = SysOk then
         g_iTotalScale := 3;
-       if GetCapacity(3, g_uUnits, g_rCapacity) = SysOk then 
-       g_iTotalScale := 4;
-       end if;
-     end if;
-   end if;
+        if GetCapacity(3, g_uUnits, g_rCapacity) = SysOk then 
+          g_iTotalScale := 4;
+        end if;
+      end if;
+    end if;
 
   end;
 
